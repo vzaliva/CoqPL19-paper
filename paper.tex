@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[sigplan]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -15,9 +15,9 @@
 %% use defaults for review submission.
 \acmJournal{PACMPL}
 \acmVolume{1}
-\acmNumber{CONF} % CONF = POPL or ICFP or OOPSLA
+\acmNumber{POPL} % CONF = POPL or ICFP or OOPSLA
 \acmArticle{1}
-\acmYear{2018}
+\acmYear{2019}
 \acmMonth{1}
 \acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
 \startPage{1}
@@ -38,13 +38,6 @@
 %% Note: author/year citations are required for papers published as an
 %% issue of PACMPL.
 \citestyle{acmauthoryear}   %% For author/year citations
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Note: Authors migrating a paper from PACMPL format to traditional
-%% SIGPLAN proceedings format must update the '\documentclass' and
-%% topmatter commands above; see 'acmart-sigplanproc-template.tex'.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% Some recommended packages.
@@ -69,67 +62,28 @@
                                         %% contents suppressed with 'anonymous'
 
 
-%% Author information
-%% Contents and number of authors suppressed with 'anonymous'.
-%% Each author should be introduced by \author, followed by
-%% \authornote (optional), \orcid (optional), \affiliation, and
-%% \email.
-%% An author may have multiple affiliations and/or emails; repeat the
-%% appropriate command.
-%% Many elements are not rendered, but should be provided for metadata
-%% extraction tools.
-
-%% Author with single affiliation.
-\author{First1 Last1}
-\authornote{with author1 note}          %% \authornote is optional;
-                                        %% can be repeated if necessary
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\author{Vadim Zaliva}
 \affiliation{
-  \position{Position1}
-  \department{Department1}              %% \department is recommended
-  \institution{Institution1}            %% \institution is required
-  \streetaddress{Street1 Address1}
-  \city{City1}
-  \state{State1}
-  \postcode{Post-Code1}
-  \country{Country1}                    %% \country is recommended
+  \institution{Carnegie Mellon University}
 }
-\email{first1.last1@inst1.edu}          %% \email is recommended
+\email{vzaliva@cmu.edu}
 
-%% Author with two affiliations and emails.
-\author{First2 Last2}
-\authornote{with author2 note}          %% \authornote is optional;
-                                        %% can be repeated if necessary
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\author{Matthieu Sozeau}
 \affiliation{
-  \position{Position2a}
-  \department{Department2a}             %% \department is recommended
-  \institution{Institution2a}           %% \institution is required
-  \streetaddress{Street2a Address2a}
-  \city{City2a}
-  \state{State2a}
-  \postcode{Post-Code2a}
-  \country{Country2a}                   %% \country is recommended
+  \institution{INRIA}
 }
-\email{first2.last2@inst2a.com}         %% \email is recommended
-\affiliation{
-  \position{Position2b}
-  \department{Department2b}             %% \department is recommended
-  \institution{Institution2b}           %% \institution is required
-  \streetaddress{Street3b Address2b}
-  \city{City2b}
-  \state{State2b}
-  \postcode{Post-Code2b}
-  \country{Country2b}                   %% \country is recommended
-}
-\email{first2.last2@inst2b.org}         %% \email is recommended
+\email{mattam@mattam.org}
 
 
-%% Abstract
-%% Note: \begin{abstract}...\end{abstract} environment must come
-%% before \maketitle command
 \begin{abstract}
-Text of abstract \ldots.
+  Shallow and deep embeddings have their pros and cons.  For example
+  shallow embedding is great for quick prototyping, while deep
+  embedding is usually used for code transformation and compilation.
+  Thus it might be useful to be able to swtich from shallow to deep
+  embedding, while make sure the semantic is preserved. We will
+  demonstrate a working approach for implementing and proving such
+  conversion using TemplateCoq.
+    
 \end{abstract}
 
 
@@ -157,7 +111,7 @@ Text of abstract \ldots.
 
 %% Keywords
 %% comma separated list
-\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
+\keywords{coq}  %% \keywords are mandatory in final camera-ready submission
 
 
 %% \maketitle
@@ -167,27 +121,16 @@ Text of abstract \ldots.
 \maketitle
 
 
-\section{Introduction}
-
-Text of paper \ldots
-
-
-%% Acknowledgments
-\begin{acks}                            %% acks environment is optional
-                                        %% contents suppressed with 'anonymous'
-  %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
-  %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
-  %% acknowledge financial support and will be used by metadata
-  %% extraction tools.
-  This material is based upon work supported by the
-  \grantsponsor{GS100000001}{National Science
-    Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
-  No.~\grantnum{GS100000001}{nnnnnnn} and Grant
-  No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
-  conclusions or recommendations expressed in this material are those
-  of the author and do not necessarily reflect the views of the
-  National Science Foundation.
-\end{acks}
+\section{Translation}
+- Misc
+    - Stripping proofs
+    - Target language could be a subset of original
+    - From variable names to DeBruijn indices
+\section{Semantics Preservation}
+  
+\section{Future and Related work}
+- From deep to shallow?
+- Generalizing as a framework
 
 
 %% Bibliography

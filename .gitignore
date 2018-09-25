@@ -241,3 +241,4 @@ TSWLatexianTemp*
 # generated if using elsarticle.cls
 *.spl
 /paper.pdf
+/comment.cut
