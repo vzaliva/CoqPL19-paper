@@ -242,5 +242,9 @@ TSWLatexianTemp*
 *.spl
 /paper.pdf
 /comment.cut
-/NExpr.glob
-/NExpr.vo
+
+
+# Coq stuff
+*.glob
+*.vo
+*.aux
