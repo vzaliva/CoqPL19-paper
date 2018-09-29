@@ -242,3 +242,5 @@ TSWLatexianTemp*
 *.spl
 /paper.pdf
 /comment.cut
+/NExpr.glob
+/NExpr.vo
