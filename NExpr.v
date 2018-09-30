@@ -3,6 +3,4 @@ Inductive NExpr: Type :=
 | NConst: nat -> NExpr
 | NPlus : NExpr -> NExpr -> NExpr
 | NMinus: NExpr -> NExpr -> NExpr
-| NMult : NExpr -> NExpr -> NExpr
-| NLam: NExpr -> NExpr
-| NApp: NExpr -> NExpr -> NExpr.
+| NMult : NExpr -> NExpr -> NExpr.
