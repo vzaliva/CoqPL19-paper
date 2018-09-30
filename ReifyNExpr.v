@@ -7,11 +7,12 @@ Import MonadNotation.
 Import ListNotations.
 
 Require Import NExpr.
+Require Import EvalNExpr.
 
-Set Universe Polymorphism.
-Set Printing Universes.
+Definition NExpr_term_equiv (σ: evalContext) (s: nat->nat) (d: NExpr) : Prop :=
+  forall (Γ: evalContext) (x:nat), Some (s x) = evalNexp (x :: (σ ++ Γ)) d.
 
-Example Ex1 (a b c x: nat) := 2 + a*x*x + b*x + c.
+Example Ex1 (a b c: nat) := fun x => 2 + a*x*x + b*x + c.
 
 Definition string_beq a b := if string_dec a b then true else false.
 
@@ -56,18 +57,19 @@ Section Reify.
     | _ => tmFail ("Unsupported NExpr" ++ (string_of_term a_n))
     end.
 
-  Definition reifyNExp@{t u} {A:Type@{t}}
-             (res_name: string)
-             (lemma_name: string)
-             (nexpr:A):
+  Polymorphic Definition reifyNExp@{t u} {A:Type@{t}}
+              (res_name: string)
+              (lemma_name: string)
+              (nexpr:A):
     TemplateMonad@{t u} unit :=
     e <- tmEval cbv nexpr ;;
       ast <- tmQuote e ;;
       cast <- compileNExpr [] ast ;;
       let '(params, c) := cast in
       c' <- tmEval cbv c ;; (* extra cbv to fold nats *)
+         (* definition with resuting NExpr *)
          def <- tmDefinition res_name c' ;;
-
+         (* lemma *)
          tmPrint params ;;
          tmPrint c' ;;
          tmReturn tt.
@@ -75,5 +77,16 @@ Section Reify.
   Run TemplateProgram (reifyNExp "Ex1_def" "Ex1_lemma" Ex1).
 
   Print Ex1_def.
+
+  Lemma Foo:
+    forall a b c,
+      NExpr_term_equiv [c;b;a] (Ex1 a b c) Ex1_def.
+  Proof.
+    intros.
+    unfold NExpr_term_equiv.
+    intros.
+    compute.
+  Qed.
+
 
 End Reify.
