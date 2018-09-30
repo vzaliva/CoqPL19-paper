@@ -9,14 +9,11 @@ Open Scope monad_scope.
 
 Definition evalContext:Type := list nat.
 
-Fixpoint evalNexp (st:evalContext) (e:NExpr): option nat :=
+Fixpoint evalNexp (Γ:evalContext) (e:NExpr): option nat :=
   match e with
-  | NVar i => nth_error st i
+  | NVar i => nth_error Γ i
   | NConst c => Some c
-  | NPlus a b => liftM2 Nat.add (evalNexp st a) (evalNexp st b)
-  | NMinus a b => liftM2 Nat.sub (evalNexp st a) (evalNexp st b)
-  | NMult a b => liftM2 Nat.mul (evalNexp st a) (evalNexp st b)
-  | NLam body => None (* top-level lambda not allowed *)
-  | NApp (NLam body) p => v <- evalNexp st p ;; evalNexp (v :: st) body
-  | NApp _ p => None (* applying non-lambda *)
+  | NPlus a b => liftM2 Nat.add (evalNexp Γ a) (evalNexp Γ b)
+  | NMinus a b => liftM2 Nat.sub (evalNexp Γ a) (evalNexp Γ b)
+  | NMult a b => liftM2 Nat.mul (evalNexp Γ a) (evalNexp Γ b)
   end.

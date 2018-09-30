@@ -61,20 +61,16 @@ Section Reify.
              (lemma_name: string)
              (nexpr:A):
     TemplateMonad@{t u} unit :=
-    nn <- tmQuote nexpr ;;
-       match nn with
-       | tConst name [] =>
-         e <- tmEval (unfold "Ex1") nexpr ;; (* TODO: strip `name` up to last '.' *)
-           ast <- tmQuote e ;;
-           cast <- compileNExpr [] ast ;;
-           let '(params, c) := cast in
-           c' <- tmEval cbv c ;;
-              def <- tmDefinition res_name c' ;;
-              tmPrint params ;;
-              tmPrint c' ;;
-              tmReturn tt
-       | _ => tmFail "unexpected parameter type"
-       end.
+    e <- tmEval cbv nexpr ;;
+      ast <- tmQuote e ;;
+      cast <- compileNExpr [] ast ;;
+      let '(params, c) := cast in
+      c' <- tmEval cbv c ;; (* extra cbv to fold nats *)
+         def <- tmDefinition res_name c' ;;
+
+         tmPrint params ;;
+         tmPrint c' ;;
+         tmReturn tt.
 
   Run TemplateProgram (reifyNExp "Ex1_def" "Ex1_lemma" Ex1).
 
