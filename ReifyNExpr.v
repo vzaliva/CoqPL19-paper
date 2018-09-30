@@ -27,30 +27,32 @@ Run TemplateProgram
 Section Reify.
   Local Opaque Nat.add Nat.sub Nat.mul.
 
-  Fixpoint compileNExpr (nparam:nat) (a_n:term): TemplateMonad (nat*NExpr) :=
+  Definition varlist:Type := list string.
+
+  Fixpoint compileNExpr (params:varlist) (a_n:term): TemplateMonad (varlist*NExpr) :=
     let inat :=  {| inductive_mind := "Coq.Init.Datatypes.nat"; inductive_ind := 0 |} in
     match a_n with
-    | (tConstruct inat 0 []) => tmReturn (nparam, NConst 0)
+    | (tConstruct inat 0 []) => tmReturn (params, NConst 0)
     | (tApp (tConstruct inat 1 []) [e]) =>
-      d_e <- compileNExpr nparam e ;;
+      d_e <- compileNExpr params e ;;
           let '(_, d_e') := d_e in
-          tmReturn (nparam, (match d_e' with
+          tmReturn (params, (match d_e' with
                              | NConst v => NConst (v+1)
                              | o => NPlus o (NConst 1)
                              end))
     | (tApp (tConst bfun []) [ a_a ; a_b]) =>
-      d_a <- compileNExpr nparam a_a ;;
-          d_b <- compileNExpr nparam a_b ;;
+      d_a <- compileNExpr params a_a ;;
+          d_b <- compileNExpr params a_b ;;
           let '(_, d_a') := d_a in
           let '(_, d_b') := d_b in
           match parse_NOp_Name bfun with
-          | Some n_Add => tmReturn (nparam, NPlus d_a' d_b')
-          | Some n_Sub => tmReturn (nparam, NMinus d_a' d_b')
-          | Some n_Mul => tmReturn (nparam, NMult d_a' d_b')
+          | Some n_Add => tmReturn (params, NPlus d_a' d_b')
+          | Some n_Sub => tmReturn (params, NMinus d_a' d_b')
+          | Some n_Mul => tmReturn (params, NMult d_a' d_b')
           | None => tmFail ("Unknown binary function" ++ bfun)
           end
-    | (tLambda _ (tInd inat []) b_n) =>  compileNExpr (nparam+1) b_n
-    | tRel n => tmReturn (nparam, NVar n)
+    | (tLambda (nNamed n) (tInd inat []) b_n) =>  compileNExpr (n::params) b_n
+    | tRel n => tmReturn (params, NVar n)
     | _ => tmFail ("Unsupported NExpr" ++ (string_of_term a_n))
     end.
 
@@ -64,13 +66,13 @@ Section Reify.
        | tConst name [] =>
          e <- tmEval (unfold "Ex1") nexpr ;; (* TODO: strip `name` up to last '.' *)
            ast <- tmQuote e ;;
-           cast <- compileNExpr 0 ast ;;
-           let '(nparam, c) := cast in
+           cast <- compileNExpr [] ast ;;
+           let '(params, c) := cast in
            c' <- tmEval cbv c ;;
-           def <- tmDefinition res_name c' ;;
-           tmPrint nparam ;;
-           tmPrint c' ;;
-           tmReturn tt
+              def <- tmDefinition res_name c' ;;
+              tmPrint params ;;
+              tmPrint c' ;;
+              tmReturn tt
        | _ => tmFail "unexpected parameter type"
        end.
 
