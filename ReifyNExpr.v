@@ -57,6 +57,28 @@ Section Reify.
     | _ => tmFail ("Unsupported NExpr" ++ (string_of_term a_n))
     end.
 
+  Fixpoint build_param_list (l:varlist) : TemplateMonad term :=
+    match l with
+    | [] => tmReturn (tApp (tConstruct {| inductive_mind := "Coq.Init.Datatypes.list"; inductive_ind := 0 |} 0 []) [tInd {| inductive_mind := "Coq.Init.Datatypes.nat"; inductive_ind := 0 |} []])
+    | x::xs =>
+      let i := length xs in
+      ts <- build_param_list xs ;;
+         tmReturn (tApp (tConstruct {| inductive_mind := "Coq.Init.Datatypes.list"; inductive_ind := 0 |} 1 []) [tInd {| inductive_mind := "Coq.Init.Datatypes.nat"; inductive_ind := 0 |} []; tRel i; ts])
+    end.
+
+  Fixpoint iota (from:nat) (len: nat) : list nat :=
+    match len with
+    | O => []
+    | S len' => List.cons from (iota (S from) len')
+    end.
+
+  Fixpoint build_forall (p:varlist) conc :=
+    let nt := tInd {| inductive_mind := "Coq.Init.Datatypes.nat"; inductive_ind := 0 |} []in
+    match p with
+    | [] => conc
+    | n::ps => tProd (nNamed n) nt (build_forall ps conc)
+    end.
+
   Polymorphic Definition reifyNExp@{t u} {A:Type@{t}}
               (res_name: string)
               (lemma_name: string)
@@ -71,23 +93,26 @@ Section Reify.
          (* definition with resuting NExpr *)
          def <- tmDefinition res_name c' ;;
          (* lemma *)
-         tmPrint params ;;
-         tmPrint c' ;;
-         tmReturn tt.
+         a_params <- build_param_list params ;;
+         let param_idx := List.map tRel (iota 0 (length params)) in
+         let a_exp := tApp ast param_idx in
+         a_c <- tmQuote c' ;;
+             let lemma_concl := tApp (tConst "NExpr_term_equiv" []) [a_params; a_c; a_exp] in
+             let lemma_ast := build_forall params lemma_concl in
+             (tmBind (tmUnquoteTyped Prop lemma_ast)
+                     (fun lemma_body => tmLemma lemma_name lemma_body
+                                             ;;
+                                             tmReturn tt)).
 
   Run TemplateProgram (reifyNExp "Ex1_def" "Ex1_lemma" Ex1).
-
-  Print Ex1_def.
-
-  Lemma Foo:
-    forall a b c x,
-      NExpr_term_equiv [c;b;a;x] Ex1_def (Ex1 a b c x) .
-  Proof.
-    intros.
+  Next Obligation.
     unfold NExpr_term_equiv.
     intros.
     compute.
+    f_equal.
   Qed.
 
+  Print Ex1_def.
+  Check Ex1_lemma.
 
 End Reify.
