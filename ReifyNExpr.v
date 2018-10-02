@@ -9,8 +9,8 @@ Import ListNotations.
 Require Import NExpr.
 Require Import EvalNExpr.
 
-Definition NExpr_term_equiv (σ: evalContext) (s: nat->nat) (d: NExpr) : Prop :=
-  forall (Γ: evalContext) (x:nat), Some (s x) = evalNexp (x :: (σ ++ Γ)) d.
+Definition NExpr_term_equiv (σ: evalContext) (d: NExpr) (s: nat)  : Prop :=
+  forall (Γ: evalContext), evalNexp (σ ++ Γ) d = Some s.
 
 Example Ex1 (a b c: nat) := fun x => 2 + a*x*x + b*x + c.
 
@@ -66,6 +66,7 @@ Section Reify.
       ast <- tmQuote e ;;
       cast <- compileNExpr [] ast ;;
       let '(params, c) := cast in
+      (* TODO: params must be >0 *)
       c' <- tmEval cbv c ;; (* extra cbv to fold nats *)
          (* definition with resuting NExpr *)
          def <- tmDefinition res_name c' ;;
@@ -79,8 +80,8 @@ Section Reify.
   Print Ex1_def.
 
   Lemma Foo:
-    forall a b c,
-      NExpr_term_equiv [c;b;a] (Ex1 a b c) Ex1_def.
+    forall a b c x,
+      NExpr_term_equiv [c;b;a;x] Ex1_def (Ex1 a b c x) .
   Proof.
     intros.
     unfold NExpr_term_equiv.
