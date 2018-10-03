@@ -50,14 +50,14 @@
 \begin{document}
 
 %% Title information
-\title[Short Title]{Full Title}         %% [Short Title] is optional;
+\title{Reification of shallow-embedded DSL in Coq with verification automation}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
-\titlenote{with title note}             %% \titlenote is optional;
+%\titlenote{with title note}             %% \titlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
-\subtitle{Subtitle}                     %% \subtitle is optional
-\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
+%\subtitle{Subtitle}                     %% \subtitle is optional
+%\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
 
@@ -80,7 +80,7 @@
   shallow embedding is excellent for quick prototyping, while deep
   embedding is better suited for code transformation and compilation.
   Thus it might be useful to be able to switch from shallow to deep
-  embedding, while making sure the semantic of embedded language is
+  embedding while making sure the semantic of embedded language is
   preserved. We will demonstrate a working approach for implementing
   and proving such conversion using TemplateCoq.
 \end{abstract}
@@ -119,27 +119,45 @@
 %% environment and commands, and keywords command.
 \maketitle
 
+\section{Introduction}
+
+In the course of our work on HELIX system\cite{helixFHPC18} we faced
+the problem of writing a certified compiled for domain specific
+language $\Sigma$-HCOL shallow-embedded in Coq. The approach presented
+in this report is the result of summer 2018 collaboration visit to
+INRIA where with TemplateCoq\cite{anand2018towards} first suggested by
+Matthieu Sozeau and successfully implemented.
+
 
 \section{Translation}
-- Misc
-    - Stripping proofs
-    - Target language could be a subset of original
-    - From variable names to DeBruijn indices
+
+
+\subsection{Misc}
+\begin{itemize}
+\item Stripping Props
+\item Target language could be a subset of original
+\item From variable names to DeBruijn indices
+\item Dealing with dependent types (\verb|TemplateMonad reifyResult| in HELIX)
+\end{itemize}
 \section{Semantics Preservation}
   
 \section{Future and Related work}
-- From deep to shallow?
-- Generalizing as a framework
-
+\begin{itemize}
+\item From deep to shallow?
+\item Generalizing as a framework
+\end{itemize}
 
 %% Bibliography
 %\bibliography{bibfile}
 
 
 %% Appendix
-\appendix
-\section{Appendix}
+%\appendix
+%\section{Appendix}
 
-Text of appendix \ldots
+
+\nocite{*}
+\bibliographystyle{acm}
+\bibliography{paper}
 
 \end{document}
