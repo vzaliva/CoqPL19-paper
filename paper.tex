@@ -40,12 +40,19 @@
 \citestyle{acmauthoryear}   %% For author/year citations
 
 
-%% Some recommended packages.
-\usepackage{booktabs}   %% For formal tables:
-                        %% http://ctan.org/pkg/booktabs
-\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
-                        %% http://ctan.org/pkg/subcaption
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{color}
 
+\input{listings-coq.tex}
+%\usepackage{booktabs}   %% For formal tables:
+%\usepackage{subcaption}
+
+
+\newcommand{\N}{\mathbb{N}}
 
 \begin{document}
 
@@ -133,20 +140,75 @@ and successfully implemented.
 While the actual application of this technique could be seen in HELIX
 source code, for this paper we created a simpler example, the complete
 source for which could be found at the following git repository:
-\url{https://github.com/vzaliva/CoqPL19-paper}.
+\url{https://github.com/vzaliva/CoqPL19-paper}. In this example we use
+a simple language of arithmetic expressions on type $\N$. Being
+shallow-embedded in Galina it will include constants, pre-bound
+variables, and three arithmetic operators: $+$, $-$, and $*$. Here is
+an example of a valid expression in this language:
 
+\begin{lstlisting}[language=Coq, mathescape=true,
+  frame=single, basicstyle=\footnotesize,
+  label=lst:oexp]
+forall (a b c x: nat), 2 + a*x*x + b*x + c.
+\end{lstlisting}
+
+The target language will include the same operators but will be
+defined by an inductive type:
+
+\begin{lstlisting}[language=Coq, mathescape=true,
+  frame=single,basicstyle=\footnotesize]
+Inductive NExpr: Type :=
+| NVar  : nat -> NExpr (* using Bruijn indices *)
+| NConst: nat -> NExpr
+| NPlus : NExpr -> NExpr -> NExpr
+| NMinus: NExpr -> NExpr -> NExpr
+| NMult : NExpr -> NExpr -> NExpr.
+\end{lstlisting}
+
+Our sample expression, translated to the target language should look
+like:
+
+\begin{lstlisting}[language=Coq, mathescape=true,
+  frame=single, basicstyle=\footnotesize]
+NPlus (NPlus (NPlus (NConst 2)
+  (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
+    (NMult (NVar 2) (NVar 0))) (NVar 1)
+\end{lstlisting}
+   
 \section{Translation}
 
+The translation process will perform reification of given expression,
+producing definitoin in the target language. It is implemented as a
+\textit{template program} \emph{reifyNExp}. It is given an input
+expression of arbitrary type (using \textit{universe polymorphism}
+feature) and two names (as strings). The first name will be used as a
+name of a new definition, to which expresion in the target language
+will be bound. The second name will be a name of semantic preservation
+lemma, discussed in the next section.
 
-\subsection{Misc}
+\begin{lstlisting}[language=Coq, mathescape=true,
+  frame=single, basicstyle=\footnotesize]
+Polymorphic Definition reifyNExp@{t u}
+  {A:Type@{t}}(res_name lemma_name: string) (nexpr:A)
+  : TemplateMonad@{t u} unit.
+\end{lstlisting}
+
+When executed, if succeeds, \emph{reifyNExp} will create the
+definition and lemma with given names or fail with an error.  The
+reason for a failure might be if the expression contains constructs
+which are legal in Gallina, but not part of our embedded language.
+
+\section{Semantics Preservation}
+
+
+\section{Misc}
 \begin{itemize}
 \item Stripping Props
 \item Target language could be a subset of original
 \item From variable names to DeBruijn indices
 \item Dealing with dependent types (\verb|TemplateMonad reifyResult| in HELIX)
 \end{itemize}
-\section{Semantics Preservation}
-  
+
 \section{Future and Related work}
 \begin{itemize}
 \item From deep to shallow?
