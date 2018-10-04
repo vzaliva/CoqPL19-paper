@@ -123,10 +123,17 @@
 
 In the course of our work on HELIX system\cite{helixFHPC18} we faced
 the problem of writing a certified compiled for domain specific
-language $\Sigma$-HCOL shallow-embedded in Coq. The approach presented
-in this report is the result of summer 2018 collaboration visit to
-INRIA where the use of TemplateCoq\cite{anand2018towards} first
-suggested by Matthieu Sozeau and successfully implemented.
+language $\Sigma$-HCOL shallow-embedded in Coq.
+
+The approach presented in this report is the result of summer 2018
+collaboration visit to INRIA where the use of
+TemplateCoq\cite{anand2018towards} first suggested by Matthieu Sozeau
+and successfully implemented.
+
+While the actual application of this technique could be seen in HELIX
+source code, for this paper we created a simpler example, the complete
+source for which could be found at the following git repository:
+\url{https://github.com/vzaliva/CoqPL19-paper}.
 
 \section{Translation}
 
@@ -160,3 +167,4 @@ suggested by Matthieu Sozeau and successfully implemented.
 \bibliography{paper}
 
 \end{document}
+
