@@ -130,24 +130,27 @@
 \section{Introduction}
 
 In the course of our work on HELIX system\cite{helixFHPC18} we faced
-the problem of writing a certified compiled for domain specific
-language $\Sigma$-HCOL shallow-embedded in Coq.
+the problem of writing a certified compiler for domain specific
+language called $\Sigma$-HCOL which is shallow-embedded in Gallina
+language of Coq\cite{Coq} proof assistant.
 
 The approach presented in this report is the result of summer 2018
 collaboration visit to INRIA where the use of
 TemplateCoq\cite{anand2018towards} first suggested by Matthieu Sozeau
 and successfully implemented.
 
-While the actual application of this technique could be seen in HELIX
-source code, for this paper we created a simpler example, the complete
-source for which could be found at the following git repository:
-\url{https://github.com/vzaliva/CoqPL19-paper}. In this example we use
-a simple language of arithmetic expressions on type $\N$. Being
-shallow-embedded in Galina it will include constants, pre-bound
-variables, and three arithmetic operators: $+$, $-$, and $*$. The
-expressions in target language have type $\N$. Provided, that
-$a, b, c, x \in \N$ below is an example of a valid expression in this
-language:
+An application of this technique to reify $\Sigma$-HCOL could be found
+in HELIX source code. For illustrative purposes in this paper we will
+use a simpler language of arithmetic expressions on natural
+numbers. It is shallow-embedded in Galina and includes constants,
+bound variables, and three arithmetic operators: $+$, $-$, and
+$*$. The complete source for which could be found in git repository
+\url{https://github.com/vzaliva/CoqPL19-paper}.
+
+\subsection{Example}
+
+Provided, that $a, b, c, x \in \N$ below is an example of a valid
+expression in source language:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   frame=single, basicstyle=\footnotesize,
@@ -156,8 +159,8 @@ language:
 2 + a*x*x + b*x + c.
 \end{lstlisting}
 
-The target language will include the same operators but will be
-defined by an inductive type of it's AST:
+The target language includes the same operators but will be defined by
+an inductive type of it's AST:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   frame=single,basicstyle=\footnotesize]
@@ -169,8 +172,8 @@ Inductive NExpr: Type :=
 | NMult : NExpr -> NExpr -> NExpr.
 \end{lstlisting}
 
-Our sample expression, translated to the target language should look
-like:
+The expression from Listing~\ref{lst:sexp}, translated to the target
+language looks like:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   frame=single, basicstyle=\footnotesize,
@@ -179,12 +182,20 @@ NPlus (NPlus (NPlus (NConst 2)
   (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
     (NMult (NVar 2) (NVar 0))) (NVar 1)
 \end{lstlisting}
-   
+
+The purpose of the reification step is just to switch from shallow to
+deep embedding. Thus the target language syntax is supposed to be
+close to the source one. We just change the representation and
+enforcing the scope of the shallow embedding, to ensure that only the
+allowed subset of Gallina. This make translation implementation pretty
+straightforward. Additionally, this allows automatic proof of semantic
+preservation.
+
 \section{Translation}
 
-The translation process will perform reification of given expression,
-producing definitoin in the target language. It is implemented as a
-\textit{template program} \emph{reifyNExp}. It is given an input
+The translation process perform reification of a given expression,
+producing an expression in the target language. It is implemented as a
+\textit{template program} named \emph{reifyNExp}. It takes an
 expression of arbitrary type (using \textit{universe polymorphism}
 feature) and two names (as strings). The first name will be used as a
 name of a new definition, to which expresion in the target language
@@ -198,16 +209,21 @@ Polymorphic Definition reifyNExp@{t u}
   : TemplateMonad@{t u} unit.
 \end{lstlisting}
 
-When executed, if succeeds, \emph{reifyNExp} will create the
-definition and lemma with given names or fail with an error.  The
+When executed, if succeeds, \emph{reifyNExp} will create a new
+definition and lemma with given names or it will fail with an error.  The
 reason for a failure might be if the expression contains constructs
 which are legal in Gallina, but not part of our embedded language.
+
+TODO: describe types of expressions we understand: (tLambda in
+particular)
+
+TODO: describe traversing Gallina AST
 
 \section{Semantics Preservation}
 
 The semantics of our source language is defined by Gallina. On the
 other hand, the inductive type representing the target language needs
-to have a semantics associated with it. We do this by providing an
+to be given a semantics associated with it. We do this by providing an
 evaluation function. It takes an \textit{evaluation context} which
 holds the current values of free variables, the expression being
 evaluated, and returns the results of such evaluation as a natural
@@ -220,10 +236,12 @@ Fixpoint evalNexp ($\Gamma$:evalContext) (e:NExpr): option nat.
 \end{lstlisting}
 
 The evaluation may fail, for example, if the expression references a
-variable not present in the evaluation context.
+variable not present in the evaluation context. As variables are
+represented by their indices, this will happen if an index is greater
+of equal than the length of the supplied list $\Gamma$.
 
 The semantic preservation is expressed as a heterogeneous relation
-between valid expressions in source and target languages:
+between expressions in source and target languages:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   frame=single, basicstyle=\footnotesize]
@@ -231,8 +249,9 @@ Definition NExpr_term_equiv ($\Gamma$: evalContext)
   (d: NExpr) (s: nat) : Prop := evalNexp $\Gamma$ d = Some s.
 \end{lstlisting}
 
-Consequently, the lemma, generated by \emph{reifyNExp} will express
-semantic equivalence between the two expressions:
+Consequently, for our example the lemma, generated by \emph{reifyNExp}
+will state semantic equivalence between the two expressions from
+Listing~\ref{lst:sexp} and Listing~\ref{lst:texp} respectively:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   frame=single, basicstyle=\footnotesize]
@@ -243,24 +262,28 @@ forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
     (2 + a * x * x + b * x + c)
 \end{lstlisting}
 
+TODO: describe proof automation
 
-\section{Misc}
-\begin{itemize}
-\item Stripping Props
-\item Target language could be a subset of original
-\item From variable names to DeBruijn indices
-\item Dealing with dependent types (\verb|TemplateMonad reifyResult| in HELIX)
-\end{itemize}
+\section{Summary}
 
-\section{Future and Related work}
-\begin{itemize}
-\item From deep to shallow?
-\item Generalizing as a framework
-\end{itemize}
+Our approach could be summarized as follows. In order to translate a
+language shallow-embedded in Gallina to the deep embedding complete
+the following steps:
 
-%% Bibliography
-%\bibliography{bibfile}
-
+\begin{enumerate}
+\item Define an inductive type for the target language AST.
+\item Implement evaluation function for the target language.
+\item Define a semantic equivalence relation between expressions in
+  source and target languages.
+\item Implement reification as template program which generates an
+  expression in target language and semantic preservation lemma.
+\item Define and prove lemmas of semantic equivalence between
+  operators of source and target languages.
+\item Using per-operator lemmas, implement \emph{Ltac} automation to prove
+  semantic preservation for arbitrary language expression.
+\item Apply this automation to prove automatically generated semantic
+  preservation lemma.  
+\end{enumerate}
 
 %% Appendix
 %\appendix
@@ -268,7 +291,6 @@ forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
 
 
 \nocite{*}
-\bibliographystyle{acm}
 \bibliography{paper}
 
 \end{document}
