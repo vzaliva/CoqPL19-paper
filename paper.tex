@@ -46,6 +46,8 @@
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{multicol}
+\usepackage{graphicx}
 
 \input{listings-coq.tex}
 %\usepackage{booktabs}   %% For formal tables:
@@ -294,6 +296,15 @@ Hint Resolve NExpr_const_equiv NExpr_var_equiv: NExprHints.
 Obligation Tactic := intros; simpl; eauto 99 with NExprHints.
 Run TemplateProgram (reifyNExp "Ex1_def" "Ex1_lemma" Ex1).
 \end{lstlisting}
+
+The ASTs of the original and translated expression and semantic
+equivalence relations between them is shown on Figure~\ref{fig:trees}.
+
+\begin{figure}[h]
+  \label{fig:trees}
+  \includegraphics[width=\columnwidth]{trees.eps}
+  \caption{Semantics equivalence}
+\end{figure}
 
 \section{Summary}
 
