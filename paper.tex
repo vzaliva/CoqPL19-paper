@@ -263,7 +263,37 @@ forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
     (2 + a * x * x + b * x + c)
 \end{lstlisting}
 
-TODO: describe proof automation
+The generated lemma still needs to be proven. Because the expressions
+in the original and target languages have the same structure, such proof
+could be automated. The general idea is to define and prove semantic
+equivalence lemmas for each pair of operators and then add them as
+hints into a hint database used with \emph{eauto} tactics:
+
+\begin{lstlisting}[language=Coq, mathescape=true,
+  frame=single, basicstyle=\footnotesize]
+Lemma NExpr_add_equiv ($\Gamma$: evalContext) {a b a' b' }:
+  NExpr_term_equiv $\Gamma$ a a' -> NExpr_term_equiv $\Gamma$ b b' ->
+  NExpr_term_equiv $\Gamma$ (NPlus a b) (Nat.add a' b').
+
+Lemma NExpr_mul_equiv ($\Gamma$: evalContext) {a b a' b' }:
+  NExpr_term_equiv $\Gamma$ a a' -> NExpr_term_equiv $\Gamma$ b b' ->
+  NExpr_term_equiv $\Gamma$ (NMult a b) (Nat.mul a' b').
+
+Lemma NExpr_const_equiv ($\Gamma$: evalContext) {v v' }:
+  evalNexp $\Gamma$ (NConst v) = Some v' ->
+  NExpr_term_equiv $\Gamma$ (NConst v) v'.
+
+Lemma NExpr_var_equiv ($\Gamma$: evalContext) {v x}:
+  evalNexp $\Gamma$ (NVar v) = Some x ->
+  NExpr_term_equiv $\Gamma$ (NVar v) x.
+
+Create HintDb NExprHints.
+Hint Resolve NExpr_add_equiv NExpr_mul_equiv: NExprHints.
+Hint Resolve NExpr_const_equiv NExpr_var_equiv: NExprHints.
+
+Obligation Tactic := intros; simpl; eauto 99 with NExprHints.
+Run TemplateProgram (reifyNExp "Ex1_def" "Ex1_lemma" Ex1).
+\end{lstlisting}
 
 \section{Summary}
 
