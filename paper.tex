@@ -132,12 +132,11 @@
 In the course of our work on HELIX system\cite{helixFHPC18} we faced
 the problem of writing a certified compiler for domain specific
 language called $\Sigma$-HCOL which is shallow-embedded in Gallina
-language of Coq\cite{Coq} proof assistant.
-
-The approach presented in this report is the result of summer 2018
-collaboration visit to INRIA where the use of
-TemplateCoq\cite{anand2018towards} first suggested by Matthieu Sozeau
-and successfully implemented and used in HELIX project.
+language of Coq\cite{Coq} proof assistant. The approach presented in
+this report is the result of summer 2018 collaboration visit to INRIA
+where the use of TemplateCoq\cite{anand2018towards} first suggested by
+Matthieu Sozeau and successfully implemented and used in HELIX
+project.
 
 An application of this technique to reify $\Sigma$-HCOL could be found
 in HELIX source code. For illustrative purposes in this paper we will
@@ -153,7 +152,7 @@ Provided, that $a, b, c, x \in \N$ below is an example of a valid
 expression in source language:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize,
+  basicstyle=\footnotesize,
   caption=Expression in source language,
   label=lst:sexp]
 2 + a*x*x + b*x + c.
@@ -164,7 +163,7 @@ an inductive type of it's AST:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   caption=Target Language type
-  frame=single,basicstyle=\footnotesize]
+  basicstyle=\footnotesize]
 Inductive NExpr: Type :=
 | NVar  : nat -> NExpr (* using Bruijn indices *)
 | NConst: nat -> NExpr
@@ -177,7 +176,7 @@ The expression from Listing~\ref{lst:sexp}, translated to the target
 language looks like:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize,
+  basicstyle=\footnotesize,
   caption=Expression in target language, label=lst:texp]
 NPlus (NPlus (NPlus (NConst 2)
   (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
@@ -213,7 +212,7 @@ bound. The second name will be a name of semantic preservation lemma,
 discussed in the next section.
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize]
+  basicstyle=\footnotesize]
 Polymorphic Definition reifyNExp@{t u}
   {A:Type@{t}}} (res_name lemma_name: string) (nexpr:A)
   : TemplateMonad@{t u} unit.
@@ -237,7 +236,7 @@ evaluated, and returns the results of such evaluation as a natural
 number or \emph{None} in case of error.
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize]
+  basicstyle=\footnotesize]
 Definition evalContext:Type := list nat.
 Fixpoint evalNexp ($\Gamma$:evalContext) (e:NExpr): option nat.
 \end{lstlisting}
@@ -251,7 +250,7 @@ The semantic preservation is expressed as a heterogeneous relation
 between expressions in source and target languages:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize]
+  basicstyle=\footnotesize]
 Definition NExpr_term_equiv ($\Gamma$: evalContext)
   (d: NExpr) (s: nat) : Prop := evalNexp $\Gamma$ d = Some s.
 \end{lstlisting}
@@ -261,7 +260,7 @@ will state semantic equivalence between the two expressions from
 Listing~\ref{lst:sexp} and Listing~\ref{lst:texp} respectively:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize]
+  basicstyle=\footnotesize]
 forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
     NPlus (NPlus (NPlus (NConst 2)
         (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
@@ -276,7 +275,7 @@ equivalence lemmas for each pair of operators and then add them as
 hints into a hint database used with \emph{eauto} tactics:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  frame=single, basicstyle=\footnotesize]
+  basicstyle=\footnotesize]
 Lemma NExpr_add_equiv ($\Gamma$: evalContext) {a b a' b' }:
   NExpr_term_equiv $\Gamma$ a a' -> NExpr_term_equiv $\Gamma$ b b' ->
   NExpr_term_equiv $\Gamma$ (NPlus a b) (Nat.add a' b').
@@ -331,10 +330,10 @@ the following steps:
   preservation lemma.  
 \end{enumerate}
 
-%% Appendix
-%\appendix
-%\section{Appendix}
-
+We successfully applied it to non-trivial $\Sigma$-HCOL language in
+HELIX featuring binders, dependent types, and high-order operators. We
+found it easy to implement and recommend it as a practical recipe for
+switching from shallow to deep embedding of DSLs.
 
 \nocite{*}
 \bibliography{paper}
