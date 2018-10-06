@@ -46,13 +46,11 @@
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage{color}
-\usepackage{multicol}
 \usepackage{graphicx}
 
 \input{listings-coq.tex}
 %\usepackage{booktabs}   %% For formal tables:
 %\usepackage{subcaption}
-
 
 \newcommand{\N}{\mathbb{N}}
 
@@ -120,7 +118,7 @@
 
 %% Keywords
 %% comma separated list
-\keywords{coq}  %% \keywords are mandatory in final camera-ready submission
+%\keywords{coq}  %% \keywords are mandatory in final camera-ready submission
 
 
 %% \maketitle
@@ -139,7 +137,7 @@ language of Coq\cite{Coq} proof assistant.
 The approach presented in this report is the result of summer 2018
 collaboration visit to INRIA where the use of
 TemplateCoq\cite{anand2018towards} first suggested by Matthieu Sozeau
-and successfully implemented.
+and successfully implemented and used in HELIX project.
 
 An application of this technique to reify $\Sigma$-HCOL could be found
 in HELIX source code. For illustrative purposes in this paper we will
@@ -198,12 +196,21 @@ preservation.
 
 The translation process perform reification of a given expression,
 producing an expression in the target language. It is implemented as a
-\textit{template program} named \emph{reifyNExp}. It takes an
-expression of arbitrary type (using \textit{universe polymorphism}
-feature) and two names (as strings). The first name will be used as a
-name of a new definition, to which expresion in the target language
-will be bound. The second name will be a name of semantic preservation
-lemma, discussed in the next section.
+\textit{template program} named \emph{reifyNExp}.
+
+The input expressions are presented in a closed form, where all
+variables first need to be introduced via lambda binding. Thus the
+input expression could be either just $\N$ in the simplest case, or
+n-ary function of natural numbers, for example $\N -> \N -> \N$.  For
+our reification program to be able to accept all expressions with
+varying arity the \textit{universe polymorphism}
+feature\cite{sozeau2014universe} is used to type the input.
+
+In addition to the input expression \emph{reifyNExp} takes two names
+(as strings). The first name will be used as a name of a new
+definition, to which expresion in the target language will be
+bound. The second name will be a name of semantic preservation lemma,
+discussed in the next section.
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   frame=single, basicstyle=\footnotesize]
@@ -213,14 +220,11 @@ Polymorphic Definition reifyNExp@{t u}
 \end{lstlisting}
 
 When executed, if succeeds, \emph{reifyNExp} will create a new
-definition and lemma with given names or it will fail with an error.  The
-reason for a failure might be if the expression contains constructs
-which are legal in Gallina, but not part of our embedded language.
-
-TODO: describe types of expressions we understand: (tLambda in
-particular)
-
-TODO: describe traversing Gallina AST
+definition and lemma with given names or it will fail with an
+error. The reason for a failure might be if the expression contains
+constructs which are legal in Gallina, but not part of our embedded
+language. The translation is implemented in a straightforward way,
+traversing Gallina AST of the original expression.
 
 \section{Semantics Preservation}
 
