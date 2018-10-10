@@ -57,7 +57,7 @@
 \begin{document}
 
 %% Title information
-\title{Reification of shallow-embedded DSL in Coq with automated verification}         %% [Short Title] is optional;
+\title{Reification of shallow-embedded DSLs in Coq with automated verification}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
 %\titlenote{with title note}             %% \titlenote is optional;
@@ -83,12 +83,12 @@
 
 
 \begin{abstract}
-  Shallow and deep embeddings have their pros and cons. For example
-  shallow embedding is excellent for quick prototyping, as it allow
-  quickly extend or modify the embedded language.  Meanwhile deep
+  Shallow and deep embeddings of DSLs have their pros and cons. For example,
+  shallow embedding is excellent for quick prototyping, as it allows
+  quick extension or modification of the embedded language.  Meanwhile, deep
   embedding is better suited for code transformation and compilation.
-  Thus it might be useful to be able to switch from shallow to deep
-  embedding while making sure the semantic of embedded language is
+  Thus, it might be useful to be able to switch from shallow to deep
+  embedding while making sure the semantics of the embedded language are
   preserved. We will demonstrate a working approach for implementing
   and proving such conversion using TemplateCoq.
 \end{abstract}
@@ -129,40 +129,39 @@
 
 \section{Introduction}
 
-In the course of our work on HELIX system\cite{helixFHPC18} we faced
-the problem of writing a certified compiler for domain specific
-language called $\Sigma$-HCOL which is shallow-embedded in Gallina
-language of Coq\cite{Coq} proof assistant. The approach presented in
-this report is the result of summer 2018 collaboration visit to INRIA
-where the use of TemplateCoq\cite{anand2018towards} first suggested by
-Matthieu Sozeau and successfully implemented and used in HELIX
+In the course of our work on the HELIX system \cite{helixFHPC18}, we faced
+the problem of writing a certified compiler for a domain specific
+language called $\Sigma$-HCOL, which is shallow-embedded in the Gallina
+language of Coq proof assistant \cite{Coq}. The approach presented in
+this report is the result of a summer of 2018 collaborative visit to INRIA,
+where the use of TemplateCoq \cite{anand2018towards} was first suggested by
+Matthieu Sozeau and successfully implemented and used in the HELIX
 project.
 
-An application of this technique to reify $\Sigma$-HCOL could be found
-in HELIX source code. For illustrative purposes in this paper we will
-use a simpler language of arithmetic expressions on natural
-numbers. It is shallow-embedded in Galina and includes constants,
+An application of this technique to reify $\Sigma$-HCOL can be found
+in the HELIX source code. For illustrative purposes in this paper, we use a simpler language of arithmetic expressions on natural
+numbers. It is shallow-embedded in Gallina and includes constants,
 bound variables, and three arithmetic operators: $+$, $-$, and
-$*$. The complete source for which could be found in git repository
+$*$, the complete source for which can be found in the git repository
 \url{https://github.com/vzaliva/CoqPL19-paper}.
 
 \subsection{Example}
 
-Provided, that $a, b, c, x \in \N$ below is an example of a valid
-expression in source language:
+Provided that $a, b, c, x \in \N$, the expression below is an example of a valid
+expression in the source language:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize,
   caption=Expression in source language,
   label=lst:sexp]
-2 + a*x*x + b*x + c.
+            2 + a*x*x + b*x + c.
 \end{lstlisting}
 
 The target language includes the same operators but will be defined by
-an inductive type of it's AST:
+an inductive type of its AST:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  caption=Target Language type
+  caption=Target language type,
   basicstyle=\footnotesize]
 Inductive NExpr: Type :=
 | NVar  : nat -> NExpr (* using Bruijn indices *)
@@ -173,7 +172,7 @@ Inductive NExpr: Type :=
 \end{lstlisting}
 
 The expression from Listing~\ref{lst:sexp}, translated to the target
-language looks like:
+language, looks like:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize,
@@ -184,55 +183,55 @@ NPlus (NPlus (NPlus (NConst 2)
 \end{lstlisting}
 
 The purpose of the reification step is just to switch from shallow to
-deep embedding. Thus the target language syntax is supposed to be
-close to the source one. We just change the representation and
-enforcing the scope of the shallow embedding, to ensure that only the
-allowed subset of Gallina. This make translation implementation pretty
+deep embedding. Thus, the target language syntax is supposed to be
+close to the source language syntax. We just change the representation and
+enforce the scope of the shallow embedding to ensure that only the
+allowed subset of Gallina is used. This makes translation implementation fairly
 straightforward. Additionally, this allows automatic proof of semantic
-preservation.
+preservation as shown below.
 
 \section{Translation}
 
-The translation process perform reification of a given expression,
-producing an expression in the target language. It is implemented as a
+The translation process performs reification of a given expression,
+producing a translated expression in the target language. It is implemented as a
 \textit{template program} named \emph{reifyNExp}.
 
 The input expressions are presented in a closed form, where all
-variables first need to be introduced via lambda binding. Thus the
-input expression could be either just $\N$ in the simplest case, or
-n-ary function of natural numbers, for example $\N -> \N -> \N$.  For
+variables first need to be introduced via lambda bindings. Thus, the
+input expression could be either just $\N$ in the simplest case or
+n-ary function of natural numbers, for example $\N -> \N -> \N$. For
 our reification program to be able to accept all expressions with
-varying arity the \textit{universe polymorphism}
-feature\cite{sozeau2014universe} is used to type the input.
+varying arity, the \textit{universe polymorphism}
+feature \cite{sozeau2014universe} is used to type the input.
 
-In addition to the input expression \emph{reifyNExp} takes two names
-(as strings). The first name will be used as a name of a new
-definition, to which expresion in the target language will be
-bound. The second name will be a name of semantic preservation lemma,
+In addition to the input expression, \emph{reifyNExp} takes two names
+(as strings). The first is used as the name of a new
+definition, to which the expression in the target language will be
+bound. The second is the name to which the semantic preservation lemma will be bound, as
 discussed in the next section.
 
 \begin{lstlisting}[language=Coq, mathescape=true,
-  basicstyle=\footnotesize]
+  basicstyle=\footnotesize, caption=Reification program]
 Polymorphic Definition reifyNExp@{t u}
   {A:Type@{t}}} (res_name lemma_name: string) (nexpr:A)
   : TemplateMonad@{t u} unit.
 \end{lstlisting}
 
-When executed, if succeeds, \emph{reifyNExp} will create a new
-definition and lemma with given names or it will fail with an
-error. The reason for a failure might be if the expression contains
-constructs which are legal in Gallina, but not part of our embedded
+When executed, if successful, \emph{reifyNExp} will create a new
+definition and new lemma with given names. If not, it will fail with an
+error. The reason for a failure might that the expression contains
+constructs which are legal in Gallina but not part of our embedded
 language. The translation is implemented in a straightforward way,
-traversing Gallina AST of the original expression.
+traversing the Gallina AST of the original expression.
 
 \section{Semantics Preservation}
 
-The semantics of our source language is defined by Gallina. On the
+The semantics of our source language are defined by Gallina. On the
 other hand, the inductive type representing the target language needs
-to be given a semantics associated with it. We do this by providing an
+to be given semantics. We do this by providing an
 evaluation function. It takes an \textit{evaluation context} which
 holds the current values of free variables, the expression being
-evaluated, and returns the results of such evaluation as a natural
+evaluated, and returns the results as a natural
 number or \emph{None} in case of error.
 
 \begin{lstlisting}[language=Coq, mathescape=true,
@@ -243,8 +242,8 @@ Fixpoint evalNexp ($\Gamma$:evalContext) (e:NExpr): option nat.
 
 The evaluation may fail, for example, if the expression references a
 variable not present in the evaluation context. As variables are
-represented by their indices, this will happen if an index is greater
-of equal than the length of the supplied list $\Gamma$.
+represented by their indices in $\Gamma$, this will happen if an index is greater
+or equal to the length of $\Gamma$.
 
 The semantic preservation is expressed as a heterogeneous relation
 between expressions in source and target languages:
@@ -255,9 +254,8 @@ Definition NExpr_term_equiv ($\Gamma$: evalContext)
   (d: NExpr) (s: nat) : Prop := evalNexp $\Gamma$ d = Some s.
 \end{lstlisting}
 
-Consequently, for our example the lemma, generated by \emph{reifyNExp}
-will state semantic equivalence between the two expressions from
-Listing~\ref{lst:sexp} and Listing~\ref{lst:texp} respectively:
+Consequently, the lemma generated by \emph{reifyNExp} for our example in Listing~\ref{lst:sexp} 
+will state semantic equivalence between its expression and that of Listing~\ref{lst:texp}:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize]
@@ -270,9 +268,9 @@ forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
 
 The generated lemma still needs to be proven. Because the expressions
 in the original and target languages have the same structure, such proof
-could be automated. The general idea is to define and prove semantic
+can be automated. The general idea is to define and prove semantic
 equivalence lemmas for each pair of operators and then add them as
-hints into a hint database used with \emph{eauto} tactics:
+hints into a hint database used with the \emph{eauto} tactic:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize]
@@ -300,8 +298,8 @@ Obligation Tactic := intros; simpl; eauto 99 with NExprHints.
 Run TemplateProgram (reifyNExp "Ex1_def" "Ex1_lemma" Ex1).
 \end{lstlisting}
 
-The ASTs of the original and translated expression and semantic
-equivalence relations between them is shown on Figure~\ref{fig:trees}.
+The ASTs of the original and translated expressions and the semantic
+equivalence relations between them are shown in Figure~\ref{fig:trees}.
 
 \begin{figure}[h]
   \includegraphics[width=\columnwidth]{trees.eps}
@@ -312,27 +310,27 @@ equivalence relations between them is shown on Figure~\ref{fig:trees}.
 \section{Summary}
 
 Our approach could be summarized as follows. In order to translate a
-language shallow-embedded in Gallina to the deep embedding complete
+language shallowly embedded in Gallina into a deep embedding, complete
 the following steps:
 
 \begin{enumerate}
 \item Define an inductive type for the target language AST.
-\item Implement evaluation function for the target language.
+\item Implement an evaluation function for the target language.
 \item Define a semantic equivalence relation between expressions in
   source and target languages.
-\item Implement reification as template program which generates an
-  expression in target language and semantic preservation lemma.
+\item Implement reification as a template program which generates an
+  expression in the target language and a semantic preservation lemma.
 \item Define and prove lemmas of semantic equivalence between
   operators of source and target languages.
-\item Define per-operator semantic equivalence lemmas and add them to
+\item Define per-operator semantic equivalence lemmas and add them to the
   hints database.
-\item Apply this automation to prove automatically generated semantic
+\item Use \emph{eauto} to prove automatically generated semantic
   preservation lemma.  
 \end{enumerate}
 
-We successfully applied it to non-trivial $\Sigma$-HCOL language in
-HELIX featuring binders, dependent types, and high-order operators. We
-found it easy to implement and recommend it as a practical recipe for
+We successfully applied this approach to non-trivial $\Sigma$-HCOL language in
+HELIX, featuring binders, dependent types, and high-order operators. We
+found it easy to implement and recommend using it as a guide for
 switching from shallow to deep embedding of DSLs.
 
 \nocite{*}
