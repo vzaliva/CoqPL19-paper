@@ -81,16 +81,16 @@
 
 \author{Matthieu Sozeau}
 \affiliation{
-  \institution{INRIA}
+  \institution{Inria \& IRIF, University Paris 7}
 }
-\email{mattam@mattam.org}
+\email{matthieu.sozeau@inria.fr}
 
 
 \begin{abstract}
   Shallow and deep embeddings of DSLs have their pros and cons. For example,
-  shallow embedding is excellent for quick prototyping, as it allows
+  shallow embeddings are excellent for quick prototyping, as it allows
   quick extension or modification of the embedded language.  Meanwhile, deep
-  embedding is better suited for code transformation and compilation.
+  embeddings are better suited for code transformation and compilation.
   Thus, it might be useful to be able to switch from shallow to deep
   embedding while making sure the semantics of the embedded language are
   preserved. We will demonstrate a working approach for implementing
@@ -136,8 +136,8 @@
 In the course of our work on the HELIX system \cite{helixFHPC18}, we faced
 the problem of writing a certified compiler for a domain specific
 language called $\Sigma$-HCOL, which is shallow-embedded in the Gallina
-language of Coq proof assistant \cite{Coq}. The approach presented in
-this report is the result of a summer of 2018 collaborative visit to INRIA,
+language of the Coq proof assistant \cite{Coq}. The approach presented in
+this report is the result of a summer of 2018 collaborative visit to Inria,
 where the use of TemplateCoq \cite{anand2018towards} was first suggested by
 Matthieu Sozeau and successfully implemented and used in the HELIX
 project.
@@ -187,12 +187,12 @@ NPlus (NPlus (NPlus (NConst 2)
 \end{lstlisting}
 
 The purpose of the reification step is just to switch from shallow to
-deep embedding. Thus, the target language syntax is supposed to be
-close to the source language syntax. We just change the representation and
+deep embedding. Thus, the target language syntax is supposed to be close
+to the source language syntax. We just change the representation and
 enforce the scope of the shallow embedding to ensure that only the
-allowed subset of Gallina is used. This makes translation implementation fairly
-straightforward. Additionally, this allows automatic proof of semantic
-preservation as shown below.
+allowed subset of Gallina is used. This makes the translation
+implementation fairly straightforward. Additionally, this allows
+automatic proof of semantic preservation as shown below.
 
 \section{Translation}
 
@@ -203,10 +203,9 @@ producing a translated expression in the target language. It is implemented as a
 The input expressions are presented in a closed form, where all
 variables first need to be introduced via lambda bindings. Thus, the
 input expression could be either just $\N$ in the simplest case or
-n-ary function of natural numbers, for example $\N -> \N -> \N$. For
-our reification program to be able to accept all expressions with
-varying arity, the \textit{universe polymorphism}
-feature \cite{sozeau2014universe} is used to type the input.
+an n-ary function of natural numbers, for example $\N \rightarrow \N \rightarrow \N$.
+The reification template program is hence polymorphic on the input type
+expression.
 
 In addition to the input expression, \emph{reifyNExp} takes two names
 (as strings). The first is used as the name of a new
@@ -217,26 +216,27 @@ discussed in the next section.
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize, caption=Reification program]
 Polymorphic Definition reifyNExp@{t u}
-  {A:Type@{t}}} (res_name lemma_name: string) (nexpr:A)
+  {A:Type@{t}} (res_name lemma_name: string) (nexpr:A)
   : TemplateMonad@{t u} unit.
 \end{lstlisting}
 
 When executed, if successful, \emph{reifyNExp} will create a new
-definition and new lemma with given names. If not, it will fail with an
-error. The reason for a failure might that the expression contains
+definition and new lemma with the given names. If not, it will fail with
+an error. The reason for a failure might that the expression contains
 constructs which are legal in Gallina but not part of our embedded
 language. The translation is implemented in a straightforward way,
-traversing the Gallina AST of the original expression.
+traversing the Gallina AST of the original expression that Template-Coq
+quoting produces.
 
 \section{Semantics Preservation}
 
-The semantics of our source language are defined by Gallina. On the
-other hand, the inductive type representing the target language needs
-to be given semantics. We do this by providing an
-evaluation function. It takes an \textit{evaluation context} which
-holds the current values of free variables, the expression being
-evaluated, and returns the results as a natural
-number or \emph{None} in case of error.
+The semantic of our source language is defined by Gallina. On the other
+hand, the inductive type representing the target language needs to be
+given its own semantics. We do this by providing an evaluation function
+for the deeply embededd terms. It takes an \textit{evaluation context}
+which holds the current values of free variables, the expression being
+evaluated, and returns the result as a natural number or \emph{None} in
+case of error.
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize]
@@ -250,7 +250,7 @@ represented by their indices in $\Gamma$, this will happen if an index is greate
 or equal to the length of $\Gamma$.
 
 The semantic preservation is expressed as a heterogeneous relation
-between expressions in source and target languages:
+between expressions in the source and target languages:
 
 \begin{lstlisting}[language=Coq, mathescape=true,
   basicstyle=\footnotesize]
@@ -325,17 +325,19 @@ the following steps:
 \item Implement reification as a template program which generates an
   expression in the target language and a semantic preservation lemma.
 \item Define and prove lemmas of semantic equivalence between
-  operators of source and target languages.
-\item Define per-operator semantic equivalence lemmas and add them to the
+  operators of source and target languages and add them to the
   hints database.
 \item Use \emph{eauto} to prove automatically generated semantic
   preservation lemma.  
 \end{enumerate}
 
-We successfully applied this approach to non-trivial $\Sigma$-HCOL language in
-HELIX, featuring binders, dependent types, and high-order operators. We
-found it easy to implement and recommend using it as a guide for
-switching from shallow to deep embedding of DSLs.
+We successfully applied this translation validation approach to the
+non-trivial $\Sigma$-HCOL language in HELIX, featuring binders,
+dependent types, and higher-order operators like map on fixed-sized
+vectors. We found it easy to implement compared to other means of
+reification like type classes or LTac programming and recommend using
+it as a guide for switching from shallow to deep embedding of DSLs. In
+the presentation, we propose to present this case study in detail.
 
 \nocite{*}
 \bibliography{paper}
