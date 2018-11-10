@@ -41,7 +41,7 @@
 %% Citation style
 %% Note: author/year citations are required for papers published as an
 %% issue of PACMPL.
-\citestyle{acmauthoryear}   %% For author/year citations
+\citestyle{plain}   %% For author/year citations
 
 
 \usepackage{url}
@@ -57,6 +57,7 @@
 %\usepackage{subcaption}
 
 \newcommand{\N}{\mathbb{N}}
+\newcommand{\ltac}{\mbox{$\mathcal{L}_{tac}$}}
 
 \begin{document}
 
@@ -64,10 +65,10 @@
 \title{Reification of shallow-embedded DSLs in Coq with automated verification}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
-%\titlenote{with title note}             %% \titlenote is optional;
+\titlenote{CoqPL'19 talk extended abstract}             %% \titlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
-%\subtitle{Subtitle}                     %% \subtitle is optional
+%\subtitle{Extended Abstract}                     %% \subtitle is optional
 %\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
@@ -88,11 +89,11 @@
 
 \begin{abstract}
   Shallow and deep embeddings of DSLs have their pros and cons. For example,
-  shallow embeddings are excellent for quick prototyping, as it allows
+  shallow embedding is excellent for quick prototyping, as it allows
   quick extension or modification of the embedded language.  Meanwhile, deep
   embeddings are better suited for code transformation and compilation.
   Thus, it might be useful to be able to switch from shallow to deep
-  embedding while making sure the semantics of the embedded language are
+  embedding while making sure the semantics of the embedded language is
   preserved. We will demonstrate a working approach for implementing
   and proving such conversion using TemplateCoq.
 \end{abstract}
@@ -136,7 +137,7 @@
 In the course of our work on the HELIX system \cite{helixFHPC18}, we faced
 the problem of writing a certified compiler for a domain specific
 language called $\Sigma$-HCOL, which is shallow-embedded in the Gallina
-language of the Coq proof assistant \cite{Coq}. The approach presented in
+language of the Coq proof assistant \cite{coq88}. The approach presented in
 this report is the result of a summer of 2018 collaborative visit to Inria,
 where the use of TemplateCoq \cite{anand2018towards} was first suggested by
 Matthieu Sozeau and successfully implemented and used in the HELIX
@@ -168,7 +169,7 @@ an inductive type of its AST:
   caption=Target language type,
   basicstyle=\footnotesize]
 Inductive NExpr: Type :=
-| NVar  : nat -> NExpr (* using Bruijn indices *)
+| NVar  : nat -> NExpr (* using de Bruijn indices *)
 | NConst: nat -> NExpr
 | NPlus : NExpr -> NExpr -> NExpr
 | NMinus: NExpr -> NExpr -> NExpr
@@ -202,7 +203,7 @@ producing a translated expression in the target language. It is implemented as a
 
 The input expressions are presented in a closed form, where all
 variables first need to be introduced via lambda bindings. Thus, the
-input expression could be either just $\N$ in the simplest case or
+input expression could be either just $\mathbb{N}$ in the simplest case or
 an n-ary function of natural numbers, for example $\N \rightarrow \N \rightarrow \N$.
 The reification template program is hence polymorphic on the input type
 expression.
@@ -222,15 +223,15 @@ Polymorphic Definition reifyNExp@{t u}
 
 When executed, if successful, \emph{reifyNExp} will create a new
 definition and new lemma with the given names. If not, it will fail with
-an error. The reason for a failure might that the expression contains
+an error. The reason for a failure might be that the expression contains
 constructs which are legal in Gallina but not part of our embedded
 language. The translation is implemented in a straightforward way,
 traversing the Gallina AST of the original expression that Template-Coq
 quoting produces.
 
-\section{Semantics Preservation}
+\section{Semantic Preservation}
 
-The semantic of our source language is defined by Gallina. On the other
+The semantics of our source language is defined by Gallina. On the other
 hand, the inductive type representing the target language needs to be
 given its own semantics. We do this by providing an evaluation function
 for the deeply embededd terms. It takes an \textit{evaluation context}
@@ -335,7 +336,7 @@ We successfully applied this translation validation approach to the
 non-trivial $\Sigma$-HCOL language in HELIX, featuring binders,
 dependent types, and higher-order operators like map on fixed-sized
 vectors. We found it easy to implement compared to other means of
-reification like type classes or LTac programming and recommend using
+reification like type classes or \ltac~programming and recommend using
 it as a guide for switching from shallow to deep embedding of DSLs. In
 the presentation, we propose to present this case study in detail.
 
