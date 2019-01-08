@@ -15,11 +15,15 @@
 \usepackage{color}
 \usepackage[many]{tcolorbox}
 
-
 \input{listings-coq.tex}
 
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\ltac}{\mbox{$\mathcal{L}_{tac}$}}
+\newcommand{\HCOL}{\emph{HCOL}}
+\newcommand{\SHCOL}{\texorpdfstring{$\Sigma$-\emph{HCOL}}{Sigma-HCOL}}
+\newcommand{\DHCOL}{\emph{D-HCOL}}
+\newcommand{\FHCOL}{\emph{F-HCOL}}
+\newcommand{\IHCOL}{\emph{I-HCOL}}
 
 \usetheme{Madrid}
 \usecolortheme{scott}
@@ -44,14 +48,13 @@
 \textsuperscript{2}Inria \& IRIF, University Paris 7
 }
 
-\date{\today}
+\date{CoqPL'19}
 
 \begin{document}
 
 \begin{frame}
   \titlepage
 \end{frame}
-
 
 \begin{frame}{Shallow and Deep Embedding}
   There are several ways to embed a domain specific language (DSL) in
@@ -69,6 +72,36 @@
   Meanwhile, deep embeddings are better suited for code transformation
   and compilation.
   
+\end{frame}
+
+\begin{frame}{Motivation}
+
+  HELIX system uses transformation and translation steps involving
+  several intermediate languages:
+  
+  \begin{figure}
+    \centering
+    \includegraphics[keepaspectratio=true,width=0.96\paperwidth]{figures/lang_seq_to_dhcol.eps}
+  \end{figure}
+
+  {\SHCOL} language is shallow embedded, while {\DHCOL} is deep
+  embedded. We were looking for a translation technique between the
+  two which is:
+  \medskip
+  \begin{enumerate}
+  \item Automated - Can automatically translate arbitrary valid
+    {\SHCOL} expressions.
+  \item Verified - Provides semantic preservation guarantees.
+  \end{enumerate}
+
+  \note[item]{{\SHCOL} and {\HCOL} are operator languages given
+    denotational semantics and shallow embedding is convenient 
+    representation for reasoning about them.}
+  \note[item]{Translation validation is used for {\SHCOL} and
+    {\HCOL} verification, while we develop a cerfified compiler from
+    {\DHCOL} to LLVM IR}
+  \note[item]{{\DHCOL} has only operational semantics}
+
 \end{frame}
 
 \begin{frame}[fragile]{An Example of Shallow Embedding in Coq}
@@ -114,5 +147,24 @@
   \end{lstlisting}
   
 \end{frame}
+
+\begin{frame}{Template Coq}
+  TBD
+\end{frame}
+
+\section{Backup slides}
+
+\begin{frame}{From Denotational to Operational Semantics}
+  \begin{center}
+    \includegraphics[width=0.8\columnwidth]{figures/semantics.eps}
+  \end{center}
+  
+  \begin{enumerate}
+  \item {\SHCOL} has both denotational and operational semantics.
+  \item Structural properties allow to switch from one to another.
+  \end{enumerate}
+  
+\end{frame}
+
 
 \end{document}
