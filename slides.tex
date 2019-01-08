@@ -3,6 +3,7 @@
 \usepackage{pgfpages}
 \setbeameroption{show notes on second screen=bottom}
 
+\usepackage{url}
 \usepackage{graphicx}
 \usepackage{xspace}
 \usepackage{subfigure}
@@ -150,6 +151,63 @@
 
 \begin{frame}{Template Coq}
   TBD
+\end{frame}
+
+\begin{frame}[fragile]{Reification Approach}
+  
+  \begin{itemize}
+  \item Implemented as \textit{Template Program} named \emph{reifyNExp}
+  \item The input expressions are given in a closed form, where all
+    variables first need to be introduced via lambda
+    bindings. E.g. $\mathbb{N}$ or
+    $\N \rightarrow \ldots \rightarrow \N$.
+  \item \emph{reifyNExp} also takes two names (as strings). The first
+    is used as the name of a new definition, to which the expression
+    in the target language will be bound. The second is the name to
+    which the semantic preservation lemma will be bound.
+  \end{itemize}
+
+  \begin{lstlisting}[language=Coq, mathescape=true, frame=single]
+  Polymorphic Definition reifyNExp@{t u}
+    {A:Type@{t}} (res_name lemma_name: string) (nexpr:A)
+    : TemplateMonad@{t u} unit.
+  \end{lstlisting}
+
+  When executed, if successful, \emph{reifyNExp} will create a new
+  definition and new lemma with the given names. If not, it will fail
+  with an error. \note{The reason for a failure might be that the
+    expression contains constructs which are legal in Gallina but not
+    part of our embedded language.}
+
+\end{frame}
+
+\begin{frame}{Semantic preservation}
+
+\begin{figure}[h]
+  \includegraphics[width=\columnwidth]{figures/trees.eps}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Questions?}
+
+  Links:
+  
+  \begin{itemize}
+  \item Full example: \url{https://github.com/vzaliva/CoqPL19-paper}
+  \item TemplateCoq:
+    \url{https://github.com/Template-Coq/template-coq/}
+  \item \textit{``HELIX: a case
+    study of a formal verification of high performance program
+    generation.''}, Vadim Zaliva, Franz Franchetti. FHPC 2018. 
+  \end{itemize}
+
+  Contact:
+
+  \begin{itemize}
+  \item Vadim Zaliva: \url{http://www.crocodile.org/lord/}
+  \item Matthieu Sozeau: \url{https://www.irif.fr/~sozeau/}
+  \end{itemize}  
+  
 \end{frame}
 
 \section{Backup slides}
