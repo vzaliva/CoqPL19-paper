@@ -248,3 +248,4 @@ TSWLatexianTemp*
 *.glob
 *.vo
 *.aux
+/slides.pdf

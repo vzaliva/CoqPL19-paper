@@ -1,0 +1,62 @@
+\documentclass{beamer}
+
+\usepackage{pgfpages}
+\setbeameroption{show notes on second screen=bottom}
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{calc}
+\usepackage{empheq}
+\usepackage[many]{tcolorbox}
+\usepackage{caption}
+\usepackage{multicol}
+
+\input{listings-coq.tex}
+
+\usetheme{Madrid}
+\usecolortheme{scott}
+\useoutertheme{scott}
+\setbeamertemplate{navigation symbols}{}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title{Reification of shallow-embedded DSLs in Coq with automated verification}
+
+\author{Vadim Zaliva \textsuperscript{1},Matthieu Sozeau \textsuperscript{2}}
+\institute[A]{\textsuperscript{1}Carnegie Mellon University\\ %
+\textsuperscript{2}Inria \& IRIF, University Paris 7
+}
+
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Shallow and Deep Embedding}
+  hello
+\end{frame}
+
+\end{document}

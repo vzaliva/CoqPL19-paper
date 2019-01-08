@@ -1,0 +1,39 @@
+% Copyright 2010 by Eric Anderson <andersoe@ece.cmu.edu>
+% 
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% HOWEVER -- If you received this file with Carnegie Mellon logo
+% images (e.g. "CM_logo_horiz_red.png", "CMU_logo_horiz_red.png", and
+% "ecelogorb.pdf"), those are protected by copyright, trademark, and
+% assassin lawyer ninjas. They belong to Carnegie Mellon University
+% and all rights are reserved.
+
+%
+% See the file doc/licenses/LICENSE for more details.
+
+
+\ProvidesPackage{beamerouterthemescott}
+    [2010/08/26 v0.1 beamer 'scott' outer theme]
+
+
+\mode<all>
+% CMU logos ("wordmarks"), official sources at
+% https://www.cmu.edu/marcom/brand-guidelines/downloads/index.html
+\newcommand{\CMlogo}[1][0.25cm]{%
+  \pgfdeclareimage[height=#1]{logo}{CM_logo_horiz_red}%
+  \logo{\pgfuseimage{logo}}%
+}
+
+\newcommand{\CMUlogo}[1][0.25cm]{%
+  \pgfdeclareimage[height=#1]{logo}{CMU_logo_horiz_red}%
+  \logo{\pgfuseimage{logo}}%
+}
+
+
+\newcommand{\ECElogo}[1][0.3cm]{%
+  \pgfdeclareimage[height=#1]{logo}{ecelogorb}%
+  \logo{\pgfuseimage{logo}}%
+}

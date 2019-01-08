@@ -1,0 +1,70 @@
+% Copyright 2010 by Eric Anderson <andersoe@ece.cmu.edu>
+% Copyright 2004 by Madhusudan Singh <madhusudan.singh@gmail.com>
+% 
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% HOWEVER -- If you received this file with Carnegie Mellon logo
+% images (e.g. "CM_logo_horiz_red.png", "CMU_logo_horiz_red.png", and
+% "ecelogorb.pdf"), those are protected by copyright, trademark, and
+% assassin lawyer ninjas. They belong to Carnegie Mellon University
+% and all rights are reserved.
+%
+% This file (scott theme) is based on the beaver theme file
+
+\ProvidesPackage{beamercolorthemescott}[2010/08/26 v0.1 beamer 'scott' colour theme]
+
+
+\mode<all>
+% Official CMU color and logo guidelines are here:
+% http://www.cmu.edu/marcom/brand-guidelines/wordmarks-colors-type.html
+% ECE Department material is here:
+% http://wiki.ece.cmu.edu/index.php/Templates_and_Logos
+
+
+% We use the red a lot.  Both official grays are a bit overpowering
+% for slide background colors, so most of the gray colors used are
+% lighter, and are defined relative to generic LaTeX gray.
+\definecolor{tartanRed}{RGB}{153,0,0}   	%Also Pantone PMS187
+\definecolor{darkGray}{RGB}{70,70,70}		%60% Black / PMS Cool Gray 9
+\definecolor{lightGray}{RGB}{212,212,212}	%30% Black / PMS Cool Gray 3
+
+
+% For convenience, here are the other university-defined colors, but
+% we don't use them.
+\definecolor{lightTan}{RGB}{243,240,233}
+\definecolor{violet}{RGB}{103,76,86}
+\definecolor{blue}{RGB}{116,147,162}
+\definecolor{mustard}{RGB}{193,165,98}
+\definecolor{brown}{RGB}{147,98,65}
+\definecolor{orange}{RGB}{209,119,2}
+\definecolor{green}{RGB}{153,153,51}
+\definecolor{tan}{RGB}{172,157,116}
+
+
+
+\mode<presentation>
+
+\setbeamercolor{section in toc}{fg=black,bg=white}
+\setbeamercolor{alerted text}{fg=tartanRed!80!gray}
+\setbeamercolor*{palette primary}{fg=tartanRed!60!black,bg=gray!30!white}
+\setbeamercolor*{palette secondary}{fg=tartanRed!70!black,bg=gray!15!white}
+\setbeamercolor*{palette tertiary}{bg=tartanRed!80!black,fg=gray!10!white}
+\setbeamercolor*{palette quaternary}{fg=tartanRed,bg=gray!5!white}
+
+\setbeamercolor*{sidebar}{fg=tartanRed,bg=darkGray}
+
+\setbeamercolor*{palette sidebar primary}{fg=tartanRed!10!black}
+\setbeamercolor*{palette sidebar secondary}{fg=white}
+\setbeamercolor*{palette sidebar tertiary}{fg=tartanRed!50!black}
+\setbeamercolor*{palette sidebar quaternary}{fg=gray!10!white}
+
+%\setbeamercolor*{titlelike}{parent=palette primary}
+\setbeamercolor{titlelike}{parent=palette primary,fg=tartanRed, bg=lightGray}
+\setbeamercolor{frametitle}{bg=lightGray}
+\setbeamercolor{frametitle right}{bg=gray!60!white}
+
+\setbeamercolor*{separation line}{}
+\setbeamercolor*{fine separation line}{}
