@@ -4,7 +4,6 @@
 \setbeameroption{show notes on second screen=bottom}
 
 \usepackage{graphicx}
-\usepackage{url}
 \usepackage{xspace}
 \usepackage{subfigure}
 \usepackage{amsmath}
@@ -14,14 +13,13 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{color}
-\usepackage{tikz}
-\usepackage{calc}
-\usepackage{empheq}
 \usepackage[many]{tcolorbox}
-\usepackage{caption}
-\usepackage{multicol}
+
 
 \input{listings-coq.tex}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\ltac}{\mbox{$\mathcal{L}_{tac}$}}
 
 \usetheme{Madrid}
 \usecolortheme{scott}
@@ -56,7 +54,65 @@
 
 
 \begin{frame}{Shallow and Deep Embedding}
-  hello
+  There are several ways to embed a domain specific language (DSL) in
+  a host language (HL):
+  \medskip
+  \begin{description}
+  \item[Deep] DSL's AST is represented as HL data structures and
+    semantic is explicitly assigned to it.
+  \item[Shallow] DSL is a subset of HL and semantic is inherited from HL.
+  \end{description}
+
+  \medskip
+  The shallow embedding is excellent for quick prototyping, as it
+  allows quick extension or modification of the embedded language.
+  Meanwhile, deep embeddings are better suited for code transformation
+  and compilation.
+  
+\end{frame}
+
+\begin{frame}[fragile]{An Example of Shallow Embedding in Coq}
+
+  As an example let us consider a simple language of arithmetic
+  expressions on natural numbers. It is shallow-embedded in Gallina
+  and includes constants, bound variables, and three arithmetic
+  operators: $+$, $-$, and $*$.
+  
+  \medskip
+  Provided that $a, b, c, x \in \N$, the expression below is an
+  example of a valid expression in the source language:
+  \medskip
+  \begin{lstlisting}[language=Coq, mathescape=true, basicstyle=\large,
+    frame=single]
+    2 + a*x*x + b*x + c.
+  \end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]{An Example of Deep Embedding in Coq}
+
+  A deep-embedded variant of the same language includes the same
+  operators but will be defined by an inductive type of its AST:
+
+  \begin{lstlisting}[language=Coq, mathescape=true,
+    frame=single, basicstyle=\footnotesize]
+    Inductive NExpr: Type :=
+    | NVar  : nat -> NExpr (* using de Bruijn indices *)
+    | NConst: nat -> NExpr
+    | NPlus : NExpr -> NExpr -> NExpr
+    | NMinus: NExpr -> NExpr -> NExpr
+    | NMult : NExpr -> NExpr -> NExpr.
+  \end{lstlisting}
+
+  Our sample expression, in deep-embedded target language, looks like:
+  
+  \begin{lstlisting}[language=Coq, mathescape=true,
+    basicstyle=\footnotesize, frame=single]
+    NPlus (NPlus (NPlus (NConst 2)
+      (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
+        (NMult (NVar 2) (NVar 0))) (NVar 1)
+  \end{lstlisting}
+  
 \end{frame}
 
 \end{document}
