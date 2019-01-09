@@ -181,11 +181,81 @@
 
 \end{frame}
 
-\begin{frame}{Semantic preservation}
 
-\begin{figure}[h]
-  \includegraphics[width=\columnwidth]{figures/trees.eps}
-\end{figure}
+\begin{frame}[fragile]{Reification Implementation}
+  
+  \begin{itemize}
+  \item All variables are converted into parameters via \emph{forall}.
+  \item Gallina AST (as \textit{quoted} by TemplateCoq) of the
+    original expression is traversed and an expression in target
+    language is generated.
+  \item Variable names are converted to de Bruijn indices.
+  \end{itemize}
+  \medskip
+  Our sample expression will be compiled to the following
+  deep-embedded form:
+  
+    \begin{lstlisting}[language=Coq, mathescape=true,frame=single]
+    NPlus (NPlus (NPlus (NConst 2)
+        (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
+        (NMult (NVar 2) (NVar 0))) (NVar 1)
+  \end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]{Semantic Preservation Approach}
+  
+  Semantics of our deep embedded language is defined by evaluation
+  function:
+
+  \begin{lstlisting}[language=Coq, mathescape=true,frame=single]
+    Definition evalContext:Type := list nat.
+    Fixpoint evalNexp ($\Gamma$:evalContext) (e:NExpr): option nat.
+  \end{lstlisting}
+
+  The semantic preservation is expressed as a heterogeneous relation
+  between expressions in the source and target languages:
+
+  \begin{lstlisting}[language=Coq, mathescape=true,frame=single]
+    Definition NExpr_term_equiv ($\Gamma$: evalContext)
+    (d: NExpr) (s: nat) : Prop := evalNexp $\Gamma$ d = Some s.
+  \end{lstlisting}
+
+  For our sample expression the following lemma will be generated:
+  
+  \begin{lstlisting}[language=Coq, mathescape=true,frame=single]
+forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
+    NPlus (NPlus (NPlus (NConst 2)
+        (NMult (NMult (NVar 3) (NVar 0)) (NVar 0)))
+        (NMult (NVar 2) (NVar 0))) (NVar 1)
+    (2 + a * x * x + b * x + c)
+  \end{lstlisting}
+  
+  \note[item]{The evaluation may fail, for example, if the expression references a
+    variable not present in the evaluation context.}
+  \note[item]{All variables are converted into parameters via \emph{forall}}
+\end{frame}
+
+\begin{frame}[fragile]{Automated Proof of Semantic Preservation Lemma}
+
+  The general idea is to define and prove semantic
+  equivalence lemmas for each pair of operators. For example:
+
+  \begin{lstlisting}[language=Coq, mathescape=true,frame=single, basicstyle=\footnotesize]
+Lemma NExpr_mul_equiv ($\Gamma$: evalContext) {a b a' b' }:
+  NExpr_term_equiv $\Gamma$ a a' -> NExpr_term_equiv $\Gamma$ b b' ->
+  NExpr_term_equiv $\Gamma$ (NMult a b) (Nat.mul a' b').
+\end{lstlisting}
+
+Because the expressions in the original and target languages have the
+same structure, such proof can be automated, for example by use of
+\emph{eauto} tactic.
+  
+  \begin{figure}[h]
+    \includegraphics[width=0.5\columnwidth]{figures/trees.eps}
+  \end{figure}
+
+  
 \end{frame}
 
 \begin{frame}[fragile]{Questions?}
