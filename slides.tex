@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage{pgfpages}
 \setbeameroption{show notes on second screen=bottom}
@@ -131,7 +131,7 @@
   \begin{lstlisting}[language=Coq, mathescape=true,
     frame=single, basicstyle=\footnotesize]
     Inductive NExpr: Type :=
-    | NVar  : nat -> NExpr (* using de Bruijn indices *)
+    | NVar  : nat -> NExpr 
     | NConst: nat -> NExpr
     | NPlus : NExpr -> NExpr -> NExpr
     | NMinus: NExpr -> NExpr -> NExpr
@@ -255,7 +255,7 @@ same structure, such proof can be automated, for example by use of
     \includegraphics[width=0.5\columnwidth]{figures/trees.eps}
   \end{figure}
 
-  
+  \note{Compositional proof}
 \end{frame}
 
 \begin{frame}[fragile]{Questions?}
