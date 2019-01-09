@@ -268,9 +268,32 @@ same structure, such proof can be automated, for example by use of
 
 
 \section{Case study}
+
+\begin{frame}{Practical use in HELIX system}
+
+  The input is shallow embedded {\SHCOL} language:
+  \begin{itemize}
+  \item An operator language on finite-dimensional vectors.
+  \item Includes meta-operators\note[item]{meta-operators are just
+      higher order functions}
+  \item Includes binders.
+  \item Uses logical parameters (of type \emph{Prop}).
+  \end{itemize}
+  \medskip
+  The output is deep embedded {\DHCOL} language:
+  \begin{itemize}
+  \item No logical parameters.
+  \item Using de Bruijn indices for variables.
+  \item Only a subset of {\SHCOL} operators are represented.
+  \item A fixed set of \textit{intirinsic} functions (e.g. $+,-,max$) is defined.
+  \end{itemize}
+  
+  
+\end{frame}
+
 \section{Conclusions}
   
-\begin{frame}[fragile]{Questions?}
+\begin{frame}{Questions?}
 
   Links:
   
