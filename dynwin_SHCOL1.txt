@@ -17,4 +17,4 @@ SafeCast (SHBinOp (IgnoreIndex2 Zless))
         $\circ$ (UnSafeCast (ISumUnion (fun jf0 : FinNat 2,
                                          eUnion (proj2_sig jf0) 0
                                          $\circ$ eT (h_index_map_compose_range_bound $\ldots$)))))))
-  : vector CarrierA 3 → SHOperator
+  : vector CarrierA 3 -> SHOperator
