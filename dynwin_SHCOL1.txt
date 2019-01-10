@@ -1,0 +1,22 @@
+dynwin_SHCOL1 = fun a : vector CarrierA 3,
+SafeCast (SHBinOp (IgnoreIndex2 Zless))
+  $\circ$ HTSUMUnion plus
+  (eUnion (le_S (le_n 1)) 0
+    $\circ$ SafeCast (IReduction plus 0
+      (SHFamilyOperatorCompose
+                 (fun jf : FinNat 3, SHCompose
+                                     (SHPointwise (Fin1SwapIndex jf (mult_by_nth a)))
+                                     (SHInductor (` jf) mult 1))
+                 (eT
+                    (GathH1_domain_bound_to_base_bound
+                       (h_bound_first_half 1 4))))))
+  (eUnion (le_n 2) 0
+    $\circ$ SafeCast (IReduction minmax.max 0
+      (fun jf : FinNat 2, SHCompose
+                          (SHBinOp (fun (i : FinNat 1) (a0 b : CarrierA),
+                                      IgnoreIndex abs i (Fin1SwapIndex2 jf (IgnoreIndex2 sub) i a0 b)))
+                          (UnSafeCast (ISumUnion (fun jf0 : FinNat 2,
+                            eUnion (proj2_sig jf0) 0
+                            $\circ$
+                            eT (h_index_map_compose_range_bound $\ldots$)))))))
+  : vector CarrierA 3 → SHOperator
