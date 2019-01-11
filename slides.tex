@@ -346,6 +346,39 @@ same structure, such proof can be automated, for example by use of
     
 \end{frame}
 
+\begin{frame}[fragile]{\emph{coq-switch} plugin}
+  While parsing Coq's AST we have to do a lot of string matching, like
+  this:
+  \begin{lstlisting}[language=Coq, mathescape=true, frame=single,
+    basicstyle=\scriptsize]
+Definition parse_SHCOL_Op_Name (s:string): option SHCOL_Op_Names :=
+  if string_dec s "Helix.SigmaHCOL.SigmaHCOL.eUnion" then Some n_eUnion
+  else if string_dec s "Helix.SigmaHCOL.SigmaHCOL.eT" then Some n_eT
+    $\ldots$
+  else None.    
+\end{lstlisting}
+
+Writing manually such biolerplate code is tiresome and error-prone. We
+developed \emph{coq-switch} plugin to to automate such tasks, for any
+decidable type:
+
+\begin{lstlisting}[language=Coq, mathescape=true, frame=single, basicstyle=\scriptsize]
+  Run TemplateProgram
+    (mkSwitch string string_beq
+              [("Helix.SigmaHCOL.SigmaHCOL.eUnion", "n_eUnion") ;
+               ("Helix.SigmaHCOL.SigmaHCOL.eT"    , "n_eT"    ) ;
+                 $\ldots$]
+              "SHCOL_Op_Names" "parse_SHCOL_Op_Name"
+    ).
+\end{lstlisting}
+
+It will generate inductive type \lstinline[language=Coq]{SHCOL_Op_Names}
+with constructors \lstinline[language=Coq]{n_eUnion}, \lstinline[language=Coq]{n_eT $\ldots$} and a
+function: \lstinline[language=Coq]{parse_SHCOL_Op_Name: string -> option SHCOL_Op_Names}.
+
+\note[item]{Aviablable via OPAM.}
+\end{frame}
+
 \section{Conclusions}
 
 
@@ -364,6 +397,7 @@ same structure, such proof can be automated, for example by use of
   \item Full example: \url{https://github.com/vzaliva/CoqPL19-paper}
   \item TemplateCoq:
     \url{https://github.com/Template-Coq/template-coq/}
+  \item \emph{coq-switch} plugin \url{https://github.com/vzaliva/coq-switch}
   \item \textit{``HELIX: a case
     study of a formal verification of high performance program
     generation.''}, Vadim Zaliva, Franz Franchetti. FHPC 2018. 
