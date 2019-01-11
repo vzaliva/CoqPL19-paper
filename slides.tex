@@ -164,12 +164,12 @@
 \begin{frame}[fragile]{Reification Approach}
   
   \begin{itemize}
-  \item Implemented as \textit{Template Program} named \emph{reifyNExp}
+  \item Implemented as \textit{Template Program} named \lstinline[language=Coq]{reifyNExp}
   \item The input expressions are given in a closed form, where all
     variables first need to be introduced via lambda
     bindings. E.g. $\mathbb{N}$ or
     $\N \rightarrow \ldots \rightarrow \N$.
-  \item \emph{reifyNExp} also takes two names (as strings). The first
+  \item \lstinline[language=Coq]{reifyNExp} also takes two names (as strings). The first
     is used as the name of a new definition, to which the expression
     in the target language will be bound. The second is the name to
     which the semantic preservation lemma will be bound.
@@ -181,7 +181,7 @@
     : TemplateMonad@{t u} unit.
   \end{lstlisting}
 
-  When executed, if successful, \emph{reifyNExp} will create a new
+  When executed, if successful, \lstinline[language=Coq]{reifyNExp} will create a new
   definition and new lemma with the given names. If not, it will fail
   with an error. \note{The reason for a failure might be that the
     expression contains constructs which are legal in Gallina but not
@@ -193,7 +193,7 @@
 \begin{frame}[fragile]{Reification Implementation}
   
   \begin{itemize}
-  \item All variables are converted into parameters via \emph{forall}.
+  \item All variables are converted into parameters via \lstinline[language=Coq]{forall}.
   \item Gallina AST (as \textit{quoted} by TemplateCoq) of the
     original expression is traversed and an expression in target
     language is generated.
@@ -241,7 +241,7 @@ forall x c b a : nat, NExpr_term_equiv [x; c; b; a]
   
   \note[item]{The evaluation may fail, for example, if the expression references a
     variable not present in the evaluation context.}
-  \note[item]{All variables are converted into parameters via \emph{forall}}
+  \note[item]{All variables are converted into parameters via \lstinline[language=Coq]{forall}}
 \end{frame}
 
 \begin{frame}[fragile]{Automated Proof of Semantic Preservation Lemma}
@@ -257,7 +257,7 @@ Lemma NExpr_mul_equiv ($\Gamma$: evalContext) {a b a' b' }:
 
 Because the expressions in the original and target languages have the
 same structure, such proof can be automated, for example by use of
-\emph{eauto} tactic.
+{eauto} tactic.
   
   \begin{figure}[h]
     \includegraphics[width=0.5\columnwidth]{figures/trees.eps}
@@ -277,7 +277,7 @@ same structure, such proof can be automated, for example by use of
   \item Includes meta-operators\note[item]{meta-operators are just
       higher order functions}
   \item Includes binders.
-  \item Uses logical parameters (of type \emph{Prop}).
+  \item Uses logical parameters (of type \lstinline[language=Coq]{Prop}).
   \end{itemize}
   \medskip
   The output is deep embedded {\DHCOL} language:
@@ -330,9 +330,9 @@ same structure, such proof can be automated, for example by use of
   Definition castReifyResult (i o:nat) (rr:reifyResult): TemplateMonad (DSHOperator i o).
   \end{lstlisting}
 
-  Our reification templete program returns \emph{TemplateMonad
-    reifyResult}. The reification of function composition is
-  implemented as:
+  Our reification templete program returns
+  \lstinline[language=Coq]{TemplateMonad reifyResult}. The reification
+  of a function composition is implemented as:
 
   \begin{lstlisting}[language=Coq, mathescape=true, frame=single, basicstyle=\scriptsize]
   | Some n_SHCompose, [fm ; i1 ; o2 ; o3 ; op1 ; op2] =>
