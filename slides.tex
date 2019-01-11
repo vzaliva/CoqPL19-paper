@@ -77,7 +77,39 @@
   
 \end{frame}
 
-\begin{frame}{Motivation}
+\begin{frame}{Motivation: HELIX project}
+  \begin{itemize}
+  \item HELIX is program generation system which can
+    generate high-performance code for a variety of linear algebra
+    algorithms, such as discrete Fourier transform, discrete cosine
+    transform, convolutions, and the discrete wavelet transform.
+  \item HELIX is inspired by SPIRAL.
+  \item Focuses on automatic translation a class of mathematical
+    expressions to code.
+  \item Revealing implicit iteration constructs and re-shaping them to
+    match target platform parallelizm and vectorization capabilities. \note[item]{our focus on logical optimization vs. actual backend hardware
+      code generators}
+  \item Rigorously defined and formally verified.
+  \item Implemented in Coq proof assistant.
+  \item Allows non-linear operators.
+  \item Presently, uses SPIRAL as an optimization oracle, but we verify
+    it's findings.\note[item]{SPIRAL is system for find optimizations
+      while HELIX is a system for reasoning about optimizations and
+      proving their correctness}
+  \item Uses LLVM as machine code generation backend.\note[item]{we
+      decided it is easier to reason about LLVM semantics than about C semantics}
+  \item Main application: Cyber-physical systems.\note[item]{CPS vs. DSP}
+  \end{itemize}
+
+  \note{
+    This were we take off with HELIX. We forego matrix interpretation
+    and treat this as a PL (Programming Language) where we reason
+    about semantics, computation, compilation, and formal
+    verification.
+  }
+\end{frame}
+
+\begin{frame}{Motivation (contd.)}
 
   HELIX system uses transformation and translation steps involving
   several intermediate languages:
