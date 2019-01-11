@@ -381,12 +381,23 @@ function: \lstinline[language=Coq]{parse_SHCOL_Op_Name: string -> option SHCOL_O
 
 \section{Conclusions}
 
+\begin{frame}{{\SHCOL} to {\DHCOL} reification in numbers}
+  \begin{itemize}
+  \item Development time: \textasciitilde 2 weeks
+  \item Lines on code:
+    \begin{description}
+    \item[Spec] 601
+    \item[Proofs] 830
+    \end{description}
+  \item Execution time:
+    \begin{description}
+    \item[Reification] 4s
+    \item[Proofs] 1s
+    \end{description}
+\end{itemize}
+  
 
-\begin{frame}{Stats}
-  Conclude, with an assessment of the LOCs needed to develop this
-  step, how much time it took to develop, how much actual time the
-  reification/proofs of semantic correctness take on reasonable
-  examples.
+  \note[1]{developement time includes experiments, finding and refining right approach}
 \end{frame}
     
 \begin{frame}{Questions?}
