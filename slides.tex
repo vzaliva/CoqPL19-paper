@@ -316,8 +316,46 @@ same structure, such proof can be automated, for example by use of
   \note[item]{Dependent types (e.g. vectors, operators)}
 \end{frame}
 
+\begin{frame}[fragile]{Reifying dependently typed operators}
+  {}{\DHCOL} operator type family is indexed by dimensions of input
+  and output vectors:
+  \begin{lstlisting}[language=Coq, mathescape=true, frame=single]
+  Inductive DSHOperator: nat -> nat -> Type
+  \end{lstlisting}
+
+  To deal with it we defined a record and cast function:
+
+  \begin{lstlisting}[language=Coq, mathescape=true, frame=single]
+  Record reifyResult := { rei_i: nat; rei_o: nat; rei_op: DSHOperator rei_i rei_o; }.
+  Definition castReifyResult (i o:nat) (rr:reifyResult): TemplateMonad (DSHOperator i o).
+  \end{lstlisting}
+
+  Our reification templete program returns \emph{TemplateMonad
+    reifyResult}. The reification of function composition is
+  implemented as:
+
+  \begin{lstlisting}[language=Coq, mathescape=true, frame=single, basicstyle=\scriptsize]
+  | Some n_SHCompose, [fm ; i1 ; o2 ; o3 ; op1 ; op2] =>
+    ni1 <- tmUnquoteTyped nat$\,$i1 ;; no2 <- tmUnquoteTyped nat$\,$o2 ;; no3 <- tmUnquoteTyped nat$\,$o3 ;;
+    cop1' <- compileSHCOL vars op1 ;; cop2' <- compileSHCOL vars op2 ;;
+    let '(_, _, cop1) := (cop1':varbindings*term*reifyResult) in
+    let '(_, _, cop2) := (cop2':varbindings*term*reifyResult) in
+    cop1 <- castReifyResult no2 no3 cop1 ;; cop2 <- castReifyResult ni1 no2 cop2 ;;
+         tmReturn (vars, fm, {| rei_i:=ni1; rei_o:=no3; rei_op:=@DSHCompose ni1 no2 no3 cop1 cop2 |})
+  \end{lstlisting}
+    
+\end{frame}
+
 \section{Conclusions}
-  
+
+
+\begin{frame}{Stats}
+  Conclude, with an assessment of the LOCs needed to develop this
+  step, how much time it took to develop, how much actual time the
+  reification/proofs of semantic correctness take on reasonable
+  examples.
+\end{frame}
+    
 \begin{frame}{Questions?}
 
   Links:
