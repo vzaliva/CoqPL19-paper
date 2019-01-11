@@ -277,6 +277,7 @@ same structure, such proof can be automated, for example by use of
   \item Includes meta-operators\note[item]{meta-operators are just
       higher order functions}
   \item Includes binders.
+  \item Operates on sparse vectors with optional collistion tracking.
   \item Uses logical parameters (of type \lstinline[language=Coq]{Prop}).
   \end{itemize}
   \medskip
@@ -284,7 +285,10 @@ same structure, such proof can be automated, for example by use of
   \begin{itemize}
   \item No logical parameters.
   \item Using de Bruijn indices for variables.
-  \item Only a subset of {\SHCOL} operators are represented.
+  \item Only a subset of {\SHCOL} operators are
+    represented.\note[item]{{\SHCOL} is normalized before reification
+      and some operators are eliminated}
+  \item Operates on dense vectors.
   \item A fixed set of \textit{intirinsic} functions (e.g. $+,-,max$) is defined.
   \end{itemize}
   
@@ -407,7 +411,7 @@ function: \lstinline[language=Coq]{parse_SHCOL_Op_Name: string -> option SHCOL_O
   \begin{itemize}
   \item Full example: \url{https://github.com/vzaliva/CoqPL19-paper}
   \item TemplateCoq:
-    \url{https://github.com/Template-Coq/template-coq/}
+    \url{https://metacoq.github.io/metacoq/}
   \item \emph{coq-switch} plugin \url{https://github.com/vzaliva/coq-switch}
   \item \textit{``HELIX: a case
     study of a formal verification of high performance program
