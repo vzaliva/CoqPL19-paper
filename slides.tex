@@ -187,8 +187,82 @@
 
 \section{Template Coq}
 
-\begin{frame}{Template Coq}
-  TBD
+\begin{frame}[fragile]{Template Coq}
+  TemplateCoq is quoting library for Coq. It takes Coq terms and
+  constructs a representation of their syntax tree as a Coq inductive
+  data type:
+
+\begin{lstlisting}[language=Coq, mathescape=true, frame=none, basicstyle=\scriptsize]
+Inductive term : Set :=
+| tRel       : nat -> term
+| tVar       : ident -> term (* For free variables (e.g. in a goal) *)
+| tMeta      : nat -> term 
+| tEvar      : nat -> list term -> term
+| tSort      : universe -> term
+| tCast      : term -> cast_kind -> term -> term
+| tProd      : name -> term (* the type *) -> term -> term
+| tLambda    : name -> term (* the type *) -> term -> term
+| tLetIn     : name -> term (* the term *) -> term (* the type *) -> term -> term
+| tApp       : term -> list term -> term
+| tConst     : kername -> universe_instance -> term
+| tInd       : inductive -> universe_instance -> term
+| tConstruct : inductive -> nat -> universe_instance -> term
+| tCase      : (inductive * nat) (* # of parameters *) -> term (* type info *)
+               -> term (* discriminee *) -> list (nat * term) (* branches *) -> term
+| tProj      : projection -> term -> term
+| tFix       : mfixpoint term -> nat -> term
+| tCoFix     : mfixpoint term -> nat -> term.
+  \end{lstlisting}
+
+  \note[item]{This is how Coq AST tree type looks like. TemplateCoq
+    ``quote'' operation reifies Coq terms to this type. The inverse
+    operation is called ``unquoting''}
+  \note[item]{The AST representation is based on the kernel’s term representation.}
+\end{frame}
+
+\begin{frame}[fragile]{The Template Monad}
+\begin{lstlisting}[language=Coq, mathescape=true, frame=none, basicstyle=\tiny]
+Cumulative Inductive TemplateMonad@{t u} : Type@{t} -> Type :=
+(* Monadic operations *)
+| tmReturn : forall {A:Type@{t}}, A -> TemplateMonad A
+| tmBind : forall {A B : Type@{t}}, TemplateMonad A -> (A -> TemplateMonad B) -> TemplateMonad B
+(* General commands *)
+| tmPrint : forall {A:Type@{t}}, A -> TemplateMonad unit
+| tmFail : forall {A:Type@{t}}, string -> TemplateMonad A
+| tmEval : reductionStrategy -> forall {A:Type@{t}}, A -> TemplateMonad A
+| tmDefinition : ident -> forall {A:Type@{t}}, A -> TemplateMonad A
+| tmAxiom : ident -> forall A : Type@{t}, TemplateMonad A
+| tmLemma : ident -> forall A : Type@{t}, TemplateMonad A
+| tmFreshName : ident -> TemplateMonad ident
+| tmAbout : ident -> TemplateMonad (option global_reference)
+| tmCurrentModPath : unit -> TemplateMonad string
+(* Quoting and unquoting commands *)
+| tmQuote : forall {A:Type@{t}}, A  -> TemplateMonad Ast.term
+| tmQuoteRec : forall {A:Type@{t}}, A  -> TemplateMonad program
+| tmQuoteInductive : kername -> TemplateMonad mutual_inductive_body
+| tmQuoteUniverses : unit -> TemplateMonad uGraph.t
+| tmQuoteConstant : kername -> bool (* bypass opacity? *) -> TemplateMonad constant_entry
+| tmMkDefinition : ident -> Ast.term -> TemplateMonad unit
+| tmMkInductive : mutual_inductive_entry -> TemplateMonad unit
+| tmUnquote : Ast.term  -> TemplateMonad typed_term@{u}
+| tmUnquoteTyped : forall A : Type@{t}, Ast.term -> TemplateMonad A
+(* Typeclass registration and querying for an instance *)
+| tmExistingInstance : ident -> TemplateMonad unit
+| tmInferInstance : forall A : Type@{t}, TemplateMonad (option A)
+.
+\end{lstlisting}
+
+\note[item]{While TemplateCoq provides quoting and unquoting
+  vernacular, we are mostly interested in programming interface
+  represented by Template Monad (shown here).}
+
+\note[item]{It allows to write \textit{template programs} which
+  inspect (via quoting) as well as construct new terms. In particualar
+  they can create new Definitions and Lemmas}.
+
+\note[item]{A template program \lstinline[language=Coq]{t} of type
+  \lstinline[language=Coq]{TemplateMonad A} could be run with
+  \lstinline[language=Coq]{Run TemplateProgram t}.}
 \end{frame}
 
 \section{Approach}
